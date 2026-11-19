@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  calidad:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: vanguardia
+          POSTGRES_PASSWORD: vanguardia
+          POSTGRES_DB: vanguardia_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vanguardia -d vanguardia_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+
+    env:
+      DATABASE_URL_TEST: postgres://vanguardia:vanguardia@localhost:5432/vanguardia_test
+      JWT_SECRET: secreto-de-ci-solo-para-pruebas-automaticas-0123456789
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm format:check
+      - run: pnpm test
