@@ -1,0 +1,9 @@
+{
+  "identities": [
+    {
+      "name": "vanguardia-dev",
+      "credentials": [{ "accessKey": "vanguardia", "secretKey": "vanguardia-secreto-dev" }],
+      "actions": ["Admin", "Read", "Write", "List", "Tagging"]
+    }
+  ]
+}
