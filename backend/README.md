@@ -38,18 +38,19 @@ Para probar desde un teléfono o emulador, ajusta `API_URL_PUBLICA` (por ejemplo
 
 ## Scripts
 
-| Script                                                                  | Qué hace                                                                          |
-| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `pnpm dev`                                                              | API con recarga automática                                                        |
-| `pnpm start`                                                            | API sin recarga                                                                   |
-| `pnpm worker`                                                           | Proceso de trabajos en cola (OCR, paquete PDF, push, correo)                      |
-| `pnpm test` / `pnpm test:watch`                                         | Pruebas con Jest contra `vanguardia_test` (se reinicia y migra en cada corrida)   |
-| `pnpm lint` / `pnpm format` / `pnpm format:check`                       | ESLint y Prettier                                                                 |
-| `pnpm db:crear`                                                         | Crea el rol y las bases locales si no existen                                     |
-| `pnpm db:migrate` / `pnpm db:migrate:undo` / `pnpm db:migrate:undo:all` | Migraciones con sequelize-cli                                                     |
-| `pnpm db:seed`                                                          | Seeders                                                                           |
-| `pnpm db:reset`                                                         | Borra la base local, migra y siembra (se niega en producción y con bases remotas) |
-| `pnpm openapi`                                                          | Genera `docs/openapi.json`                                                        |
+| Script                                                                  | Qué hace                                                                                                              |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`                                                              | API con recarga automática                                                                                            |
+| `pnpm start`                                                            | API sin recarga                                                                                                       |
+| `pnpm worker`                                                           | Proceso de trabajos en cola (OCR, paquete PDF, push, correo)                                                          |
+| `pnpm test` / `pnpm test:watch`                                         | Pruebas con Jest contra `vanguardia_test` (se reinicia y migra en cada corrida)                                       |
+| `pnpm lint` / `pnpm format` / `pnpm format:check`                       | ESLint y Prettier                                                                                                     |
+| `pnpm db:crear`                                                         | Crea el rol y las bases locales si no existen                                                                         |
+| `pnpm db:migrate` / `pnpm db:migrate:undo` / `pnpm db:migrate:undo:all` | Migraciones con sequelize-cli                                                                                         |
+| `pnpm db:seed`                                                          | Seeders base (roles, permisos, municipios, catálogos, requisitos, configuración)                                      |
+| `pnpm db:seed:demo`                                                     | Datos de demostración ficticios (`*.demo@vanguardia.test`, contraseña de `SEED_DEMO_CONTRASENA`); nunca en producción |
+| `pnpm db:reset`                                                         | Borra la base local, migra y siembra (se niega en producción y con bases remotas)                                     |
+| `pnpm openapi`                                                          | Genera `docs/openapi.json`                                                                                            |
 
 ## Procesos
 
@@ -64,12 +65,12 @@ Ambos comparten la base de datos; pg-boss usa el esquema `pgboss`.
 src/
 ├── app.js · server.js · worker.js · routes.js · jobs.js
 ├── config/         # env.js (variables validadas con Zod) y database.js (sequelize-cli)
-├── db/             # migraciones y seeders
-├── models/         # modelos de Sequelize; asociaciones en index.js
+├── db/             # migrations/, seeders/ (+ data/), seeders-demo/ y semillas/ (carga reutilizable)
+├── models/         # un modelo por tabla (43); asociaciones y sus alias en index.js
 ├── openapi/        # Zod extendido (zod.js) y registro de rutas (registro.js)
 ├── core/           # errores, http, logger, auth, almacenamiento, cola, salud…
 └── modules/<modulo>/   # un router de Express por módulo de negocio
-test/               # setup de Jest, helpers y factories
+test/               # setup de Jest; helpers (limpiarBase, tokenPara) y factories
 ```
 
 ## Convenciones de la API
@@ -80,6 +81,14 @@ test/               # setup de Jest, helpers y factories
 - Cada router define rutas completas relativas a `/api/v1`. Los middlewares de autenticación y permisos van en cada ruta, nunca con `router.use()`.
 - Los esquemas importan `z` desde `src/openapi/zod.js` y cada endpoint se documenta con `registrarRuta()` de `src/openapi/registro.js`.
 - Los logs nunca incluyen cuerpos de petición, query strings, tokens ni contraseñas.
+
+## Base de datos
+
+- 43 tablas creadas con migraciones de sequelize-cli (`src/db/migrations`), todas reversibles. Llaves UUID con `gen_random_uuid()`, salvo departamentos y municipios (código oficial).
+- Las listas cerradas son `VARCHAR` + `CHECK`; los valores permitidos están en `Modelo.VALORES` y en `src/core/estados/constantes.js`. Una prueba comprueba que coincidan con la base.
+- Búsqueda de pacientes sin acentos: columna generada `pacientes.nombre_busqueda` con índice trigram (no está en el modelo; consúltala con `sequelize.col('nombre_busqueda')`).
+- El código de caso sale de la secuencia `solicitud_codigo_seq`.
+- Catálogo de 298 municipios en `src/db/seeders/data/municipios.csv`, pendiente de verificar contra la fuente oficial.
 
 ## Notas
 
