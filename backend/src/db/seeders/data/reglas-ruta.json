@@ -1,0 +1,22 @@
+{
+  "_nota": "Reglas de EJEMPLO (versión 1). Los criterios reales entre Honduras y el exterior son una decisión pendiente de la organización. Las variables son los hechos del brief 10.",
+  "version": 1,
+  "reglas": [
+    {
+      "nombre": "proveedor_local_en_departamento",
+      "prioridad": 10,
+      "condicion": { ">": [{ "var": "proveedoresLocalesEnDepartamento" }, 0] },
+      "ruta_sugerida": "HONDURAS",
+      "motivo_es": "Hay proveedores locales con la especialidad requerida en el departamento del niño.",
+      "motivo_en": "There are local providers with the required specialty in the child's department."
+    },
+    {
+      "nombre": "sin_proveedor_local",
+      "prioridad": 20,
+      "condicion": { "==": [{ "var": "proveedoresLocalesEnPais" }, 0] },
+      "ruta_sugerida": "POR_EVALUAR",
+      "motivo_es": "La atención solicitada no está en el catálogo de proveedores locales.",
+      "motivo_en": "The requested care is not in the catalog of local providers."
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "_nota": "Permisos por rol (brief 01). Los roles son fijos en v1; cambiar esta tabla exige un seeder o migración nueva.",
+  "roles": [
+    {
+      "codigo": "familia",
+      "nombre_es": "Familia",
+      "nombre_en": "Family",
+      "descripcion": "Padres o tutores que registran a sus niños y sus solicitudes"
+    },
+    {
+      "codigo": "voluntario",
+      "nombre_es": "Voluntario",
+      "nombre_en": "Volunteer",
+      "descripcion": "Captura documentos en jornada y revisa el OCR de los casos asignados"
+    },
+    {
+      "codigo": "coordinador",
+      "nombre_es": "Coordinador",
+      "nombre_en": "Coordinator",
+      "descripcion": "Valida expedientes, registra la ruta decidida y da seguimiento a cada caso"
+    },
+    {
+      "codigo": "administrador",
+      "nombre_es": "Administrador",
+      "nombre_en": "Administrator",
+      "descripcion": "Configura usuarios, catálogos, requisitos, plantillas y reportes"
+    }
+  ],
+  "permisos": [
+    {
+      "codigo": "perfil.gestionar",
+      "descripcion": "Ver y editar el perfil propio",
+      "roles": ["familia", "voluntario", "coordinador", "administrador"]
+    },
+    {
+      "codigo": "catalogo.leer",
+      "descripcion": "Leer catálogos y contactos oficiales",
+      "roles": ["familia", "voluntario", "coordinador", "administrador"]
+    },
+    {
+      "codigo": "notificacion.leer",
+      "descripcion": "Ver y marcar las notificaciones propias",
+      "roles": ["familia", "voluntario", "coordinador", "administrador"]
+    },
+    {
+      "codigo": "paciente.leer",
+      "descripcion": "Ver niños (la familia, solo los suyos)",
+      "roles": ["familia", "coordinador"]
+    },
+    {
+      "codigo": "paciente.gestionar",
+      "descripcion": "Registrar y editar niños y responsables legales",
+      "roles": ["familia", "coordinador"]
+    },
+    {
+      "codigo": "solicitud.crear",
+      "descripcion": "Crear una solicitud de atención",
+      "roles": ["familia"]
+    },
+    {
+      "codigo": "solicitud.enviar",
+      "descripcion": "Enviar la solicitud a revisión",
+      "roles": ["familia"]
+    },
+    {
+      "codigo": "consentimiento.decidir",
+      "descripcion": "Aceptar o rechazar consentimientos",
+      "roles": ["familia"]
+    },
+    {
+      "codigo": "solicitud.leer",
+      "descripcion": "Ver el resumen de una solicitud con relación al caso",
+      "roles": ["familia", "voluntario", "coordinador"]
+    },
+    {
+      "codigo": "solicitud.editar_secciones",
+      "descripcion": "Guardar secciones del formulario",
+      "roles": ["familia", "voluntario", "coordinador"]
+    },
+    {
+      "codigo": "documento.capturar",
+      "descripcion": "Crear documentos y subir páginas",
+      "roles": ["familia", "voluntario", "coordinador"]
+    },
+    {
+      "codigo": "documento.validar",
+      "descripcion": "Validar o rechazar documentos",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "solicitud.confirmar_completo",
+      "descripcion": "Confirmar la etapa de evaluación o de paquete",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "correccion.solicitar",
+      "descripcion": "Pedir una nueva captura o una corrección",
+      "roles": ["voluntario", "coordinador"]
+    },
+    {
+      "codigo": "ocr.revisar",
+      "descripcion": "Confirmar o corregir campos del OCR",
+      "roles": ["voluntario", "coordinador"]
+    },
+    {
+      "codigo": "voluntario.casos",
+      "descripcion": "Ver el inicio y los casos asignados del voluntario",
+      "roles": ["voluntario"]
+    },
+    {
+      "codigo": "asignacion.gestionar",
+      "descripcion": "Asignar y cerrar asignaciones de voluntarios",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "coordinador.tablero",
+      "descripcion": "Ver el inicio, la actividad y el tablero",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "expediente.ver_completo",
+      "descripcion": "Ver historia clínica y bitácora del expediente",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "solicitud.confirmar_destino",
+      "descripcion": "Registrar la evaluación y la ruta decidida",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "evaluacion.reabrir",
+      "descripcion": "Reabrir la evaluación de ruta",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "derivacion.gestionar",
+      "descripcion": "Registrar y seguir derivaciones en Honduras",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "paquete.generar",
+      "descripcion": "Generar y compartir el paquete PDF",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "envio.registrar",
+      "descripcion": "Registrar el envío a Shriners",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "respuesta.registrar",
+      "descripcion": "Registrar la respuesta de Shriners",
+      "roles": ["coordinador"]
+    },
+    {
+      "codigo": "mensaje.enviar",
+      "descripcion": "Usar el chat del caso",
+      "roles": ["familia", "coordinador"]
+    },
+    {
+      "codigo": "admin.usuarios",
+      "descripcion": "Administrar usuarios y roles",
+      "roles": ["administrador"]
+    },
+    {
+      "codigo": "admin.catalogos",
+      "descripcion": "Administrar catálogos, tipos de documento y requisitos",
+      "roles": ["administrador"]
+    },
+    {
+      "codigo": "admin.plantillas",
+      "descripcion": "Registrar plantillas oficiales",
+      "roles": ["administrador"]
+    },
+    {
+      "codigo": "admin.reglas_ruta",
+      "descripcion": "Administrar las reglas de ruta",
+      "roles": ["administrador"]
+    },
+    {
+      "codigo": "admin.proveedores",
+      "descripcion": "Administrar proveedores locales en Honduras",
+      "roles": ["administrador"]
+    },
+    {
+      "codigo": "admin.reportes",
+      "descripcion": "Ver el panel y los reportes",
+      "roles": ["administrador"]
+    },
+    {
+      "codigo": "admin.configuracion",
+      "descripcion": "Editar la configuración y los contactos oficiales",
+      "roles": ["administrador"]
+    }
+  ]
+}

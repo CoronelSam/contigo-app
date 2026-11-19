@@ -1,0 +1,200 @@
+{
+  "_nota": "Tipos de documento y requisitos por ruta. Los 12 del Paso 1 internacional son: los 3 de EVALUACION + los 6 de INTERNACIONAL + 3 por confirmar con el manual. Las entradas con por_confirmar=true NO se cargan en la base.",
+  "tipos": [
+    {
+      "codigo": "fotos_condicion",
+      "categoria": "medico",
+      "nombre_es": "Fotos de la condición",
+      "nombre_en": "Photos of the condition",
+      "para_que_sirve_es": "Permiten al equipo médico ver la condición del niño antes de decidir la ruta de atención.",
+      "para_que_sirve_en": "They let the medical team see the child's condition before deciding the care route.",
+      "como_fotografiar_es": "Con buena luz natural, de frente y de lado, sin filtros. Incluye toda la zona afectada.",
+      "como_fotografiar_en": "In good natural light, from the front and the side, without filters. Include the whole affected area.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "radiografias_informes",
+      "categoria": "medico",
+      "nombre_es": "Radiografías o informes médicos",
+      "nombre_en": "X-rays or medical reports",
+      "para_que_sirve_es": "Muestran estudios previos que ayudan a evaluar el caso.",
+      "para_que_sirve_en": "They show previous studies that help evaluate the case.",
+      "como_fotografiar_es": "Coloca la radiografía frente a una ventana o pantalla blanca. Fotografía cada hoja del informe completa.",
+      "como_fotografiar_en": "Place the X-ray in front of a window or white screen. Photograph each full page of the report.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "certificacion_medica",
+      "categoria": "medico",
+      "nombre_es": "Certificación del profesional de salud",
+      "nombre_en": "Health professional certification",
+      "para_que_sirve_es": "La prepara y firma un profesional de salud autorizado. La familia no la llena.",
+      "para_que_sirve_en": "It is prepared and signed by an authorized health professional. The family does not fill it in.",
+      "como_fotografiar_es": "Fotografía cada página completa, con la firma y el sello visibles.",
+      "como_fotografiar_en": "Photograph each full page, with the signature and stamp visible.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "solicitud_internacional",
+      "categoria": "formulario",
+      "nombre_es": "Formulario de solicitud internacional",
+      "nombre_en": "International patient application",
+      "para_que_sirve_es": "Es el formulario oficial de solicitud del programa internacional. Si llenas la solicitud en la app, se genera solo.",
+      "para_que_sirve_en": "It is the official application form of the international program. If you fill in the request in the app, it is generated automatically.",
+      "como_fotografiar_es": "Fotografía cada página completa, sobre una superficie plana y con buena luz.",
+      "como_fotografiar_en": "Photograph each full page on a flat surface with good light.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "cuestionario_historia_clinica",
+      "categoria": "formulario",
+      "nombre_es": "Cuestionario de historia clínica",
+      "nombre_en": "Medical history questionnaire",
+      "para_que_sirve_es": "Reúne la historia médica del niño. Si llenas la solicitud en la app, se genera solo.",
+      "para_que_sirve_en": "It gathers the child's medical history. If you fill in the request in the app, it is generated automatically.",
+      "como_fotografiar_es": "Fotografía cada página completa, sobre una superficie plana y con buena luz.",
+      "como_fotografiar_en": "Photograph each full page on a flat surface with good light.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "consentimiento_divulgacion_firmado",
+      "categoria": "consentimiento_firmado",
+      "nombre_es": "Autorización de divulgación de información médica (firmada)",
+      "nombre_en": "Authorization to release medical information (signed)",
+      "para_que_sirve_es": "Es la hoja firmada según el procedimiento autorizado. La app no firma por ti.",
+      "para_que_sirve_en": "It is the sheet signed following the authorized procedure. The app does not sign for you.",
+      "como_fotografiar_es": "Fotografía la hoja completa con la firma visible.",
+      "como_fotografiar_en": "Photograph the whole sheet with the signature visible.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "consentimiento_marketing_firmado",
+      "categoria": "consentimiento_firmado",
+      "nombre_es": "Consentimiento de difusión (firmado)",
+      "nombre_en": "Outreach consent (signed)",
+      "para_que_sirve_es": "Es la hoja firmada con tu decisión sobre la difusión. Rechazarla no afecta la solicitud médica.",
+      "para_que_sirve_en": "It is the signed sheet with your decision about outreach. Declining it does not affect the medical request.",
+      "como_fotografiar_es": "Fotografía la hoja completa con la firma visible.",
+      "como_fotografiar_en": "Photograph the whole sheet with the signature visible.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "consentimiento_telesalud_firmado",
+      "categoria": "consentimiento_firmado",
+      "nombre_es": "Consentimiento de telesalud (firmado)",
+      "nombre_en": "Telehealth consent (signed)",
+      "para_que_sirve_es": "Es la hoja firmada según el procedimiento autorizado.",
+      "para_que_sirve_en": "It is the sheet signed following the authorized procedure.",
+      "como_fotografiar_es": "Fotografía la hoja completa con la firma visible.",
+      "como_fotografiar_en": "Photograph the whole sheet with the signature visible.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "consentimiento_condiciones_firmado",
+      "categoria": "consentimiento_firmado",
+      "nombre_es": "Condiciones de la atención (firmado)",
+      "nombre_en": "Conditions of treatment (signed)",
+      "para_que_sirve_es": "Es la hoja firmada según el procedimiento autorizado.",
+      "para_que_sirve_en": "It is the sheet signed following the authorized procedure.",
+      "como_fotografiar_es": "Fotografía la hoja completa con la firma visible.",
+      "como_fotografiar_en": "Photograph the whole sheet with the signature visible.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "informacion_financiera",
+      "categoria": "financiero",
+      "nombre_es": "Información financiera",
+      "nombre_en": "Financial information",
+      "para_que_sirve_es": "La pide el Hospital Shriners México como parte de su paquete.",
+      "para_que_sirve_en": "Shriners Hospital Mexico requests it as part of its package.",
+      "como_fotografiar_es": "Fotografía cada página completa.",
+      "como_fotografiar_en": "Photograph each full page.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "seguros",
+      "categoria": "financiero",
+      "nombre_es": "Seguros",
+      "nombre_en": "Insurance",
+      "para_que_sirve_es": "Indica si el niño tiene algún seguro médico.",
+      "para_que_sirve_en": "It shows whether the child has any health insurance.",
+      "como_fotografiar_es": "Fotografía cada página completa.",
+      "como_fotografiar_en": "Photograph each full page.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "consentimiento_ortopedico",
+      "categoria": "consentimiento_firmado",
+      "nombre_es": "Consentimiento ortopédico (firmado)",
+      "nombre_en": "Orthopedic consent (signed)",
+      "para_que_sirve_es": "Es la hoja firmada que pide el Hospital Shriners México.",
+      "para_que_sirve_en": "It is the signed sheet requested by Shriners Hospital Mexico.",
+      "como_fotografiar_es": "Fotografía la hoja completa con la firma visible.",
+      "como_fotografiar_en": "Photograph the whole sheet with the signature visible.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "inmunizaciones",
+      "categoria": "medico",
+      "nombre_es": "Carné de vacunación",
+      "nombre_en": "Immunization record",
+      "para_que_sirve_es": "Muestra las vacunas del niño.",
+      "para_que_sirve_en": "It shows the child's vaccines.",
+      "como_fotografiar_es": "Fotografía cada página con vacunas registradas.",
+      "como_fotografiar_en": "Photograph each page with recorded vaccines.",
+      "admite_varias_paginas": true
+    },
+    {
+      "codigo": "registro_domicilio_croquis",
+      "categoria": "otro",
+      "nombre_es": "Registro de domicilio con croquis",
+      "nombre_en": "Home address record with sketch map",
+      "para_que_sirve_es": "Ubica la casa del niño con un croquis, como lo pide el Hospital Shriners México.",
+      "para_que_sirve_en": "It locates the child's home with a sketch map, as requested by Shriners Hospital Mexico.",
+      "como_fotografiar_es": "Fotografía la hoja completa, con el croquis legible.",
+      "como_fotografiar_en": "Photograph the whole sheet, with the sketch map readable.",
+      "admite_varias_paginas": true
+    }
+  ],
+  "requisitos": {
+    "EVALUACION": [
+      { "tipo": "fotos_condicion", "obligatorio": true },
+      { "tipo": "radiografias_informes", "obligatorio": true },
+      { "tipo": "certificacion_medica", "obligatorio": true }
+    ],
+    "INTERNACIONAL": [
+      {
+        "tipo": "solicitud_internacional",
+        "obligatorio": true,
+        "cubierto_por_secciones": ["informacion_medica", "profesional_salud"]
+      },
+      {
+        "tipo": "cuestionario_historia_clinica",
+        "obligatorio": true,
+        "cubierto_por_secciones": [
+          "embarazo_nacimiento",
+          "antecedentes_medicos",
+          "medicamentos_alergias",
+          "crecimiento_movilidad",
+          "educacion"
+        ]
+      },
+      { "tipo": "consentimiento_divulgacion_firmado", "obligatorio": true },
+      { "tipo": "consentimiento_marketing_firmado", "obligatorio": false },
+      { "tipo": "consentimiento_telesalud_firmado", "obligatorio": true },
+      { "tipo": "consentimiento_condiciones_firmado", "obligatorio": true },
+      { "tipo": "partida_nacimiento", "por_confirmar": true },
+      { "tipo": "identificacion_tutor", "por_confirmar": true },
+      { "tipo": "pasaporte_nino", "por_confirmar": true }
+    ],
+    "MEXICO": [
+      { "tipo": "informacion_financiera", "obligatorio": true },
+      { "tipo": "seguros", "obligatorio": true },
+      { "tipo": "consentimiento_ortopedico", "obligatorio": true },
+      { "tipo": "inmunizaciones", "obligatorio": true },
+      { "tipo": "registro_domicilio_croquis", "obligatorio": true },
+      { "tipo": "solicitud_mexico", "por_confirmar": true }
+    ],
+    "HONDURAS": []
+  }
+}

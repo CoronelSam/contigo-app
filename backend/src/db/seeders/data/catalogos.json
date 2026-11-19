@@ -1,0 +1,187 @@
+{
+  "_nota": "Valores iniciales para revisar con la organización. Se guardan y viajan por código; la etiqueta depende del idioma.",
+  "especialidad_medica": [
+    {
+      "codigo": "ortopedia_pediatrica",
+      "es": "Ortopedia pediátrica",
+      "en": "Pediatric orthopedics"
+    },
+    { "codigo": "cirugia_columna", "es": "Cirugía de columna", "en": "Spine surgery" },
+    {
+      "codigo": "cirugia_plastica",
+      "es": "Cirugía plástica y reconstructiva",
+      "en": "Plastic and reconstructive surgery"
+    },
+    {
+      "codigo": "medicina_fisica_rehabilitacion",
+      "es": "Medicina física y rehabilitación",
+      "en": "Physical medicine and rehabilitation"
+    },
+    {
+      "codigo": "neurologia_pediatrica",
+      "es": "Neurología pediátrica",
+      "en": "Pediatric neurology"
+    },
+    { "codigo": "neurocirugia", "es": "Neurocirugía", "en": "Neurosurgery" },
+    { "codigo": "ortesis_protesis", "es": "Órtesis y prótesis", "en": "Orthotics and prosthetics" },
+    { "codigo": "otorrinolaringologia", "es": "Otorrinolaringología", "en": "Otolaryngology" },
+    { "codigo": "pediatria", "es": "Pediatría", "en": "Pediatrics" },
+    { "codigo": "medicina_general", "es": "Medicina general", "en": "General medicine" },
+    { "codigo": "otra", "es": "Otra", "en": "Other" }
+  ],
+  "tipo_atencion": [
+    {
+      "codigo": "evaluacion_ortopedica",
+      "es": "Evaluación ortopédica",
+      "en": "Orthopedic evaluation",
+      "metadatos": { "especialidades": ["ortopedia_pediatrica"] }
+    },
+    {
+      "codigo": "escoliosis",
+      "es": "Escoliosis u otra deformidad de columna",
+      "en": "Scoliosis or other spinal deformity",
+      "metadatos": { "especialidades": ["ortopedia_pediatrica", "cirugia_columna"] }
+    },
+    {
+      "codigo": "pie_zambo",
+      "es": "Pie zambo",
+      "en": "Clubfoot",
+      "metadatos": { "especialidades": ["ortopedia_pediatrica"] }
+    },
+    {
+      "codigo": "displasia_cadera",
+      "es": "Displasia de cadera",
+      "en": "Hip dysplasia",
+      "metadatos": { "especialidades": ["ortopedia_pediatrica"] }
+    },
+    {
+      "codigo": "diferencia_extremidades",
+      "es": "Diferencia de longitud o deformidad de extremidades",
+      "en": "Limb length difference or deformity",
+      "metadatos": { "especialidades": ["ortopedia_pediatrica"] }
+    },
+    {
+      "codigo": "paralisis_cerebral",
+      "es": "Parálisis cerebral",
+      "en": "Cerebral palsy",
+      "metadatos": {
+        "especialidades": [
+          "ortopedia_pediatrica",
+          "medicina_fisica_rehabilitacion",
+          "neurologia_pediatrica"
+        ]
+      }
+    },
+    {
+      "codigo": "secuelas_quemaduras",
+      "es": "Secuelas de quemaduras",
+      "en": "Burn scar care",
+      "metadatos": { "especialidades": ["cirugia_plastica"] }
+    },
+    {
+      "codigo": "labio_paladar_hendido",
+      "es": "Labio y paladar hendido",
+      "en": "Cleft lip and palate",
+      "metadatos": { "especialidades": ["cirugia_plastica", "otorrinolaringologia"] }
+    },
+    {
+      "codigo": "lesion_medula_espinal",
+      "es": "Lesión de médula espinal",
+      "en": "Spinal cord injury",
+      "metadatos": { "especialidades": ["medicina_fisica_rehabilitacion", "neurocirugia"] }
+    },
+    {
+      "codigo": "protesis_ortesis",
+      "es": "Prótesis u órtesis",
+      "en": "Prosthetics or orthotics",
+      "metadatos": { "especialidades": ["ortesis_protesis", "medicina_fisica_rehabilitacion"] }
+    },
+    { "codigo": "otra", "es": "Otra", "en": "Other", "metadatos": { "especialidades": [] } }
+  ],
+  "condicion_medica": [
+    { "codigo": "asma", "es": "Asma", "en": "Asthma" },
+    { "codigo": "convulsiones", "es": "Convulsiones o epilepsia", "en": "Seizures or epilepsy" },
+    { "codigo": "cardiopatia", "es": "Problemas del corazón", "en": "Heart problems" },
+    {
+      "codigo": "problemas_respiratorios",
+      "es": "Otros problemas respiratorios",
+      "en": "Other breathing problems"
+    },
+    { "codigo": "anemia", "es": "Anemia", "en": "Anemia" },
+    {
+      "codigo": "problemas_sangrado",
+      "es": "Problemas de sangrado o coagulación",
+      "en": "Bleeding or clotting problems"
+    },
+    { "codigo": "diabetes", "es": "Diabetes", "en": "Diabetes" },
+    {
+      "codigo": "problemas_renales",
+      "es": "Problemas de riñón o urinarios",
+      "en": "Kidney or urinary problems"
+    },
+    { "codigo": "problemas_vision", "es": "Problemas de visión", "en": "Vision problems" },
+    { "codigo": "problemas_audicion", "es": "Problemas de audición", "en": "Hearing problems" },
+    {
+      "codigo": "retraso_desarrollo",
+      "es": "Retraso en el desarrollo",
+      "en": "Developmental delay"
+    },
+    {
+      "codigo": "infecciones_frecuentes",
+      "es": "Infecciones frecuentes",
+      "en": "Frequent infections"
+    },
+    { "codigo": "otra", "es": "Otra", "en": "Other" }
+  ],
+  "ayuda_tecnica": [
+    { "codigo": "silla_ruedas", "es": "Silla de ruedas", "en": "Wheelchair" },
+    { "codigo": "andadera", "es": "Andadera", "en": "Walker" },
+    { "codigo": "muletas", "es": "Muletas", "en": "Crutches" },
+    { "codigo": "baston", "es": "Bastón", "en": "Cane" },
+    { "codigo": "ortesis", "es": "Órtesis o férula", "en": "Brace or splint" },
+    { "codigo": "protesis", "es": "Prótesis", "en": "Prosthesis" },
+    { "codigo": "zapatos_ortopedicos", "es": "Zapatos ortopédicos", "en": "Orthopedic shoes" },
+    { "codigo": "otra", "es": "Otra", "en": "Other" }
+  ],
+  "terapia": [
+    { "codigo": "fisioterapia", "es": "Fisioterapia", "en": "Physical therapy" },
+    { "codigo": "terapia_ocupacional", "es": "Terapia ocupacional", "en": "Occupational therapy" },
+    { "codigo": "terapia_lenguaje", "es": "Terapia de lenguaje", "en": "Speech therapy" },
+    { "codigo": "estimulacion_temprana", "es": "Estimulación temprana", "en": "Early stimulation" },
+    { "codigo": "psicologia", "es": "Psicología", "en": "Psychology" },
+    { "codigo": "otra", "es": "Otra", "en": "Other" }
+  ],
+  "grado_escolar": [
+    {
+      "codigo": "no_aplica",
+      "es": "No aplica (aún no tiene edad escolar)",
+      "en": "Not applicable (not school age yet)"
+    },
+    { "codigo": "prebasica", "es": "Prebásica (kínder o preparatoria)", "en": "Preschool" },
+    { "codigo": "basica_1", "es": "Primer grado", "en": "1st grade" },
+    { "codigo": "basica_2", "es": "Segundo grado", "en": "2nd grade" },
+    { "codigo": "basica_3", "es": "Tercer grado", "en": "3rd grade" },
+    { "codigo": "basica_4", "es": "Cuarto grado", "en": "4th grade" },
+    { "codigo": "basica_5", "es": "Quinto grado", "en": "5th grade" },
+    { "codigo": "basica_6", "es": "Sexto grado", "en": "6th grade" },
+    { "codigo": "basica_7", "es": "Séptimo grado", "en": "7th grade" },
+    { "codigo": "basica_8", "es": "Octavo grado", "en": "8th grade" },
+    { "codigo": "basica_9", "es": "Noveno grado", "en": "9th grade" },
+    { "codigo": "media_10", "es": "Décimo grado", "en": "10th grade" },
+    { "codigo": "media_11", "es": "Undécimo grado", "en": "11th grade" },
+    { "codigo": "media_12", "es": "Duodécimo grado", "en": "12th grade" },
+    { "codigo": "educacion_especial", "es": "Educación especial", "en": "Special education" }
+  ],
+  "parentesco": [
+    { "codigo": "madre", "es": "Madre", "en": "Mother" },
+    { "codigo": "padre", "es": "Padre", "en": "Father" },
+    { "codigo": "abuela", "es": "Abuela", "en": "Grandmother" },
+    { "codigo": "abuelo", "es": "Abuelo", "en": "Grandfather" },
+    { "codigo": "tia", "es": "Tía", "en": "Aunt" },
+    { "codigo": "tio", "es": "Tío", "en": "Uncle" },
+    { "codigo": "hermana", "es": "Hermana", "en": "Sister" },
+    { "codigo": "hermano", "es": "Hermano", "en": "Brother" },
+    { "codigo": "tutor_legal", "es": "Tutor legal", "en": "Legal guardian" },
+    { "codigo": "otro", "es": "Otro", "en": "Other" }
+  ]
+}

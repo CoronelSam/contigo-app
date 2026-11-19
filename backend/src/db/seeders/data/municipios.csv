@@ -1,0 +1,299 @@
+codigo,departamento_codigo,nombre
+0101,01,La Ceiba
+0102,01,El Porvenir
+0103,01,Esparta
+0104,01,Jutiapa
+0105,01,La Masica
+0106,01,San Francisco
+0107,01,Tela
+0108,01,Arizona
+0201,02,Trujillo
+0202,02,Balfate
+0203,02,Iriona
+0204,02,Limón
+0205,02,Sabá
+0206,02,Santa Fe
+0207,02,Santa Rosa de Aguán
+0208,02,Sonaguera
+0209,02,Tocoa
+0210,02,Bonito Oriental
+0301,03,Comayagua
+0302,03,Ajuterique
+0303,03,El Rosario
+0304,03,Esquías
+0305,03,Humuya
+0306,03,La Libertad
+0307,03,Lamaní
+0308,03,La Trinidad
+0309,03,Lejamaní
+0310,03,Meámbar
+0311,03,Minas de Oro
+0312,03,Ojos de Agua
+0313,03,San Jerónimo
+0314,03,San José de Comayagua
+0315,03,San José del Potrero
+0316,03,San Luis
+0317,03,San Sebastián
+0318,03,Siguatepeque
+0319,03,Villa de San Antonio
+0320,03,Las Lajas
+0321,03,Taulabé
+0401,04,Santa Rosa de Copán
+0402,04,Cabañas
+0403,04,Concepción
+0404,04,Copán Ruinas
+0405,04,Corquín
+0406,04,Cucuyagua
+0407,04,Dolores
+0408,04,Dulce Nombre
+0409,04,El Paraíso
+0410,04,Florida
+0411,04,La Jigua
+0412,04,La Unión
+0413,04,Nueva Arcadia
+0414,04,San Agustín
+0415,04,San Antonio
+0416,04,San Jerónimo
+0417,04,San José
+0418,04,San Juan de Opoa
+0419,04,San Nicolás
+0420,04,San Pedro
+0421,04,Santa Rita
+0422,04,Trinidad de Copán
+0423,04,Veracruz
+0501,05,San Pedro Sula
+0502,05,Choloma
+0503,05,Omoa
+0504,05,Pimienta
+0505,05,Potrerillos
+0506,05,Puerto Cortés
+0507,05,San Antonio de Cortés
+0508,05,San Francisco de Yojoa
+0509,05,San Manuel
+0510,05,Santa Cruz de Yojoa
+0511,05,Villanueva
+0512,05,La Lima
+0601,06,Choluteca
+0602,06,Apacilagua
+0603,06,Concepción de María
+0604,06,Duyure
+0605,06,El Corpus
+0606,06,El Triunfo
+0607,06,Marcovia
+0608,06,Morolica
+0609,06,Namasigüe
+0610,06,Orocuina
+0611,06,Pespire
+0612,06,San Antonio de Flores
+0613,06,San Isidro
+0614,06,San José
+0615,06,San Marcos de Colón
+0616,06,Santa Ana de Yusguare
+0701,07,Yuscarán
+0702,07,Alauca
+0703,07,Danlí
+0704,07,El Paraíso
+0705,07,Güinope
+0706,07,Jacaleapa
+0707,07,Liure
+0708,07,Morocelí
+0709,07,Oropolí
+0710,07,Potrerillos
+0711,07,San Antonio de Flores
+0712,07,San Lucas
+0713,07,San Matías
+0714,07,Soledad
+0715,07,Teupasenti
+0716,07,Texiguat
+0717,07,Vado Ancho
+0718,07,Yauyupe
+0719,07,Trojes
+0801,08,Distrito Central
+0802,08,Alubarén
+0803,08,Cedros
+0804,08,Curarén
+0805,08,El Porvenir
+0806,08,Guaimaca
+0807,08,La Libertad
+0808,08,La Venta
+0809,08,Lepaterique
+0810,08,Maraita
+0811,08,Marale
+0812,08,Nueva Armenia
+0813,08,Ojojona
+0814,08,Orica
+0815,08,Reitoca
+0816,08,Sabanagrande
+0817,08,San Antonio de Oriente
+0818,08,San Buenaventura
+0819,08,San Ignacio
+0820,08,San Juan de Flores (Cantarranas)
+0821,08,San Miguelito
+0822,08,Santa Ana
+0823,08,Santa Lucía
+0824,08,Talanga
+0825,08,Tatumbla
+0826,08,Valle de Ángeles
+0827,08,Villa de San Francisco
+0828,08,Vallecillo
+0901,09,Puerto Lempira
+0902,09,Brus Laguna
+0903,09,Ahuas
+0904,09,Juan Francisco Bulnes
+0905,09,Ramón Villeda Morales
+0906,09,Wampusirpe
+1001,10,La Esperanza
+1002,10,Camasca
+1003,10,Colomoncagua
+1004,10,Concepción
+1005,10,Dolores
+1006,10,Intibucá
+1007,10,Jesús de Otoro
+1008,10,Magdalena
+1009,10,Masaguara
+1010,10,San Antonio
+1011,10,San Isidro
+1012,10,San Juan
+1013,10,San Marcos de la Sierra
+1014,10,San Miguel Guancapla
+1015,10,Santa Lucía
+1016,10,Yamaranguila
+1017,10,San Francisco de Opalaca
+1101,11,Roatán
+1102,11,Guanaja
+1103,11,José Santos Guardiola
+1104,11,Utila
+1201,12,La Paz
+1202,12,Aguanqueterique
+1203,12,Cabañas
+1204,12,Cane
+1205,12,Chinacla
+1206,12,Guajiquiro
+1207,12,Lauterique
+1208,12,Marcala
+1209,12,Mercedes de Oriente
+1210,12,Opatoro
+1211,12,San Antonio del Norte
+1212,12,San José
+1213,12,San Juan
+1214,12,San Pedro de Tutule
+1215,12,Santa Ana
+1216,12,Santa Elena
+1217,12,Santa María
+1218,12,Santiago de Puringla
+1219,12,Yarula
+1301,13,Gracias
+1302,13,Belén
+1303,13,Candelaria
+1304,13,Cololaca
+1305,13,Erandique
+1306,13,Gualcince
+1307,13,Guarita
+1308,13,La Campa
+1309,13,La Iguala
+1310,13,Las Flores
+1311,13,La Unión
+1312,13,La Virtud
+1313,13,Lepaera
+1314,13,Mapulaca
+1315,13,Piraera
+1316,13,San Andrés
+1317,13,San Francisco
+1318,13,San Juan Guarita
+1319,13,San Manuel Colohete
+1320,13,San Rafael
+1321,13,San Sebastián
+1322,13,Santa Cruz
+1323,13,Talgua
+1324,13,Tambla
+1325,13,Tomalá
+1326,13,Valladolid
+1327,13,Virginia
+1328,13,San Marcos de Caiquín
+1401,14,Nueva Ocotepeque
+1402,14,Belén Gualcho
+1403,14,Concepción
+1404,14,Dolores Merendón
+1405,14,Fraternidad
+1406,14,La Encarnación
+1407,14,La Labor
+1408,14,Lucerna
+1409,14,Mercedes
+1410,14,San Fernando
+1411,14,San Francisco del Valle
+1412,14,San Jorge
+1413,14,San Marcos
+1414,14,Santa Fe
+1415,14,Sensenti
+1416,14,Sinuapa
+1501,15,Juticalpa
+1502,15,Campamento
+1503,15,Catacamas
+1504,15,Concordia
+1505,15,Dulce Nombre de Culmí
+1506,15,El Rosario
+1507,15,Esquipulas del Norte
+1508,15,Gualaco
+1509,15,Guarizama
+1510,15,Guata
+1511,15,Guayape
+1512,15,Jano
+1513,15,La Unión
+1514,15,Mangulile
+1515,15,Manto
+1516,15,Salamá
+1517,15,San Esteban
+1518,15,San Francisco de Becerra
+1519,15,San Francisco de la Paz
+1520,15,Santa María del Real
+1521,15,Silca
+1522,15,Yocón
+1523,15,Patuca
+1601,16,Santa Bárbara
+1602,16,Arada
+1603,16,Atima
+1604,16,Azacualpa
+1605,16,Ceguaca
+1606,16,San José de las Colinas
+1607,16,Concepción del Norte
+1608,16,Concepción del Sur
+1609,16,Chinda
+1610,16,El Níspero
+1611,16,Gualala
+1612,16,Ilama
+1613,16,Macuelizo
+1614,16,Naranjito
+1615,16,Nuevo Celilac
+1616,16,Petoa
+1617,16,Protección
+1618,16,Quimistán
+1619,16,San Francisco de Ojuera
+1620,16,San Luis
+1621,16,San Marcos
+1622,16,San Nicolás
+1623,16,San Pedro Zacapa
+1624,16,Santa Rita
+1625,16,San Vicente Centenario
+1626,16,Trinidad
+1627,16,Las Vegas
+1628,16,Nueva Frontera
+1701,17,Nacaome
+1702,17,Alianza
+1703,17,Amapala
+1704,17,Aramecina
+1705,17,Caridad
+1706,17,Goascorán
+1707,17,Langue
+1708,17,San Francisco de Coray
+1709,17,San Lorenzo
+1801,18,Yoro
+1802,18,Arenal
+1803,18,El Negrito
+1804,18,El Progreso
+1805,18,Jocón
+1806,18,Morazán
+1807,18,Olanchito
+1808,18,Santa Rita
+1809,18,Sulaco
+1810,18,Victoria
+1811,18,Yorito

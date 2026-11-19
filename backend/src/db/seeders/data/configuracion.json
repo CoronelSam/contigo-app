@@ -1,0 +1,86 @@
+{
+  "contactos.oficiales": {
+    "descripcion": "Contactos oficiales de la pantalla 33. VALORES DE PRUEBA: reemplazar por información verificada.",
+    "valor": {
+      "dePrueba": true,
+      "organizacion": "Vanguardia (datos de prueba)",
+      "telefono": "+504 0000-0000",
+      "whatsapp": "+504 0000-0001",
+      "correo": "contacto@vanguardia.test",
+      "horario": {
+        "es": "Lunes a viernes, 8:00 a 16:00 (prueba)",
+        "en": "Monday to Friday, 8:00 to 16:00 (test)"
+      },
+      "direccion": { "es": "Dirección de prueba", "en": "Test address" }
+    }
+  },
+  "ayuda.articulos": {
+    "descripcion": "Artículos de ayuda de la pantalla 33, en español e inglés. Contenido de prueba.",
+    "valor": {
+      "es": [
+        {
+          "codigo": "como_usar",
+          "titulo": "Cómo usar la app",
+          "cuerpo": "Contenido de prueba: reemplazar por la guía aprobada."
+        },
+        {
+          "codigo": "como_fotografiar",
+          "titulo": "Cómo fotografiar documentos",
+          "cuerpo": "Contenido de prueba: reemplazar por la guía aprobada."
+        },
+        {
+          "codigo": "preguntas_frecuentes",
+          "titulo": "Preguntas frecuentes",
+          "cuerpo": "Contenido de prueba: reemplazar por la guía aprobada."
+        },
+        {
+          "codigo": "privacidad",
+          "titulo": "Privacidad",
+          "cuerpo": "Contenido de prueba: reemplazar por la política aprobada."
+        }
+      ],
+      "en": [
+        {
+          "codigo": "como_usar",
+          "titulo": "How to use the app",
+          "cuerpo": "Test content: replace with the approved guide."
+        },
+        {
+          "codigo": "como_fotografiar",
+          "titulo": "How to photograph documents",
+          "cuerpo": "Test content: replace with the approved guide."
+        },
+        {
+          "codigo": "preguntas_frecuentes",
+          "titulo": "Frequently asked questions",
+          "cuerpo": "Test content: replace with the approved guide."
+        },
+        {
+          "codigo": "privacidad",
+          "titulo": "Privacy",
+          "cuerpo": "Test content: replace with the approved policy."
+        }
+      ]
+    }
+  },
+  "solicitudes.permitir_multiples_abiertas": {
+    "descripcion": "Si un niño puede tener más de una solicitud abierta (decisión pendiente).",
+    "valor": false
+  },
+  "consentimientos.requieren_firma": {
+    "descripcion": "Tipos de consentimiento que quedan con firma pendiente hasta subir la hoja firmada.",
+    "valor": ["divulgacion_informacion_medica", "marketing", "telesalud", "condiciones_atencion"]
+  },
+  "ocr.umbral_confianza": {
+    "descripcion": "Confianza mínima para que un campo de OCR no se marque como dudoso (0 a 1).",
+    "valor": 0.8
+  },
+  "paquete.bloquear_firmas_pendientes": {
+    "descripcion": "Si las firmas pendientes bloquean el paquete final.",
+    "valor": true
+  },
+  "auth.exigir_correo_verificado": {
+    "descripcion": "Si el inicio de sesión exige el correo verificado (decisión pendiente).",
+    "valor": false
+  }
+}
