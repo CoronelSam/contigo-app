@@ -12,6 +12,7 @@ const { logger: loggerCompartido } = require('./core/logger');
 const { manejadorErrores, rutaNoEncontrada } = require('./core/errores/manejador');
 const { registrarChequeosBase } = require('./core/salud');
 const almacenamiento = require('./core/almacenamiento');
+const { middlewareContexto } = require('./core/contexto');
 const { crearRutasApi } = require('./routes');
 const { PREFIJO_API } = require('./openapi/registro');
 
@@ -56,6 +57,7 @@ function crearApp({ logger = loggerCompartido } = {}) {
   app.use(helmet());
   app.use(cors({ origin: cfg.http.corsOrigenes.length ? cfg.http.corsOrigenes : false }));
   app.use(express.json({ limit: '1mb' }));
+  app.use(middlewareContexto);
 
   registrarChequeosBase();
   app.use(require('./modules/salud'));
