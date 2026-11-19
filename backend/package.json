@@ -16,16 +16,15 @@
     "test": "NODE_OPTIONS='--experimental-vm-modules --disable-warning=ExperimentalWarning' jest --runInBand",
     "test:watch": "NODE_OPTIONS='--experimental-vm-modules --disable-warning=ExperimentalWarning' jest --runInBand --watch",
     "lint": "eslint .",
-    "format": "prettier --write \"{src,test,scripts,infra,.github}/**/*.{js,json,yml}\" \"*.{js,json,yml}\" README.md",
-    "format:check": "prettier --check \"{src,test,scripts,infra,.github}/**/*.{js,json,yml}\" \"*.{js,json,yml}\" README.md",
+    "format": "prettier --write \"{src,test,scripts,.github}/**/*.{js,json,yml}\" \"*.{js,json,yml}\" README.md",
+    "format:check": "prettier --check \"{src,test,scripts,.github}/**/*.{js,json,yml}\" \"*.{js,json,yml}\" README.md",
+    "db:crear": "node scripts/crear-base.js",
     "db:migrate": "sequelize-cli db:migrate",
     "db:migrate:undo": "sequelize-cli db:migrate:undo",
     "db:migrate:undo:all": "sequelize-cli db:migrate:undo:all",
     "db:seed": "sequelize-cli db:seed:all",
     "db:reset": "node scripts/reiniciar-base.js && sequelize-cli db:migrate && sequelize-cli db:seed:all",
-    "openapi": "node --env-file-if-exists=.env scripts/generar-openapi.js",
-    "infra:up": "node scripts/infra.js up",
-    "infra:down": "node scripts/infra.js down"
+    "openapi": "node --env-file-if-exists=.env scripts/generar-openapi.js"
   },
   "dependencies": {
     "@asteasolutions/zod-to-openapi": "^9.1.0",

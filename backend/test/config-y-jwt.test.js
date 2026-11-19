@@ -42,6 +42,29 @@ describe('config/env', () => {
     ).toThrow(/S3_BUCKET/);
   });
 
+  test('en producción el almacenamiento debe ser s3', () => {
+    expect(() =>
+      cargarConfig({
+        NODE_ENV: 'production',
+        DATABASE_URL: 'postgres://l/db',
+        JWT_SECRET: SECRETO,
+        ALMACENAMIENTO_PROVEEDOR: 'disco',
+      }),
+    ).toThrow(/ALMACENAMIENTO_PROVEEDOR: disco no se permite en producción/);
+  });
+
+  test('fuera de producción usa disco y la URL pública por defecto', () => {
+    const cfg = cargarConfig({
+      NODE_ENV: 'development',
+      DATABASE_URL: 'postgres://l/db',
+      JWT_SECRET: SECRETO,
+      PORT: '4000',
+    });
+    expect(cfg.almacenamiento.proveedor).toBe('disco');
+    expect(cfg.almacenamiento.directorio).toBe('tmp/almacenamiento');
+    expect(cfg.http.apiUrlPublica).toBe('http://localhost:4000');
+  });
+
   test('no permite almacenamiento ni cola en memoria en producción', () => {
     expect(() =>
       cargarConfig({

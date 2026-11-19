@@ -29,7 +29,8 @@ const esquema = z
     JWT_ACCESS_TTL: z.string().default('15m'),
     REFRESH_TTL_DIAS: z.coerce.number().int().positive().default(30),
 
-    ALMACENAMIENTO_PROVEEDOR: z.enum(['s3', 'memoria']).default('s3'),
+    ALMACENAMIENTO_PROVEEDOR: z.enum(['disco', 's3', 'memoria']).default('disco'),
+    ALMACENAMIENTO_DIRECTORIO: z.string().default('tmp/almacenamiento'),
     S3_ENDPOINT: opcional,
     S3_ENDPOINT_PUBLICO: opcional,
     S3_REGION: z.string().default('us-east-1'),
@@ -56,6 +57,7 @@ const esquema = z
 
     CORS_ORIGENES: z.string().default(''),
     TRUST_PROXY: z.coerce.number().int().min(0).default(0),
+    API_URL_PUBLICA: opcional,
     APP_ENLACE_BASE: z.string().default('vanguardia://'),
     DOCS_HABILITADAS: booleano(false),
   })
@@ -77,11 +79,11 @@ const esquema = z
       falta('FCM_CREDENCIALES_JSON_BASE64', 'con PUSH_PROVEEDOR=fcm');
     }
     if (e.NODE_ENV === 'production') {
-      if (e.ALMACENAMIENTO_PROVEEDOR === 'memoria') {
+      if (e.ALMACENAMIENTO_PROVEEDOR !== 's3') {
         ctx.addIssue({
           code: 'custom',
           path: ['ALMACENAMIENTO_PROVEEDOR'],
-          message: 'memoria no se permite en producción',
+          message: `${e.ALMACENAMIENTO_PROVEEDOR} no se permite en producción (usa s3)`,
         });
       }
       if (e.COLA_PROVEEDOR === 'memoria') {
@@ -124,6 +126,7 @@ function cargarConfig(env = process.env) {
     }),
     almacenamiento: Object.freeze({
       proveedor: e.ALMACENAMIENTO_PROVEEDOR,
+      directorio: e.ALMACENAMIENTO_DIRECTORIO,
       endpoint: e.S3_ENDPOINT,
       endpointPublico: e.S3_ENDPOINT_PUBLICO,
       region: e.S3_REGION,
@@ -155,6 +158,7 @@ function cargarConfig(env = process.env) {
         .map((o) => o.trim())
         .filter(Boolean),
       trustProxy: e.TRUST_PROXY,
+      apiUrlPublica: (e.API_URL_PUBLICA ?? `http://localhost:${e.PORT}`).replace(/\/+$/, ''),
       enlaceBase: e.APP_ENLACE_BASE,
       docsHabilitadas: e.DOCS_HABILITADAS,
     }),

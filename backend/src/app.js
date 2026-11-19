@@ -11,6 +11,7 @@ const { config } = require('./config/env');
 const { logger: loggerCompartido } = require('./core/logger');
 const { manejadorErrores, rutaNoEncontrada } = require('./core/errores/manejador');
 const { registrarChequeosBase } = require('./core/salud');
+const almacenamiento = require('./core/almacenamiento');
 const { crearRutasApi } = require('./routes');
 const { PREFIJO_API } = require('./openapi/registro');
 
@@ -58,6 +59,10 @@ function crearApp({ logger = loggerCompartido } = {}) {
 
   registrarChequeosBase();
   app.use(require('./modules/salud'));
+  if (almacenamiento.proveedor() === 'disco') {
+    // Descargas firmadas del almacenamiento local de desarrollo (equivalen a URL prefirmadas de S3).
+    app.get(`${almacenamiento.RUTA_DESCARGA}/*clave`, almacenamiento.manejarDescarga);
+  }
   app.use(PREFIJO_API, crearRutasApi());
 
   app.use(rutaNoEncontrada);

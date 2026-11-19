@@ -24,7 +24,7 @@ function correr(comando, args) {
 
 module.exports = async () => {
   if (!process.env.DATABASE_URL_TEST) {
-    throw new Error('Falta DATABASE_URL_TEST. Copia .env.example a .env y corre pnpm infra:up');
+    throw new Error('Falta DATABASE_URL_TEST. Copia .env.example a .env y corre pnpm db:crear');
   }
   correr(process.execPath, [path.join(raiz, 'scripts', 'reiniciar-base.js')]);
   correr(sequelizeCli, ['db:migrate']);

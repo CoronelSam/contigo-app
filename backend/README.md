@@ -2,33 +2,39 @@
 
 API REST y procesos en segundo plano de Vanguardia: reúne la información médica y los documentos de cada niño, sugiere una ruta de atención (Honduras, Hospital Shriners México o programa internacional en Tampa), registra la decisión y da seguimiento al caso.
 
-Node.js 24 · Express 5 · PostgreSQL 17 + Sequelize 6 · pg-boss · S3 compatible · Zod + OpenAPI 3.1 · Jest.
+Node.js 24 · Express 5 · PostgreSQL 17 o superior + Sequelize 6 · pg-boss · almacenamiento en disco (desarrollo) o S3 (servidores) · Zod + OpenAPI 3.1 · Jest.
 
 ## Requisitos
 
 - Node.js 24 (ver `.node-version`).
 - pnpm (la versión exacta está en `packageManager` de `package.json`). **No uses npm ni yarn.**
-- Docker con Compose (`docker compose` o `docker-compose`).
+- PostgreSQL 17 o superior corriendo en local. Con Homebrew: `brew install postgresql@18` y `brew services start postgresql@18`.
+
+El desarrollo local no usa Docker ni servicios externos: los archivos se guardan en `tmp/almacenamiento`, la cola usa la misma base de datos y el correo y el push son simulados.
 
 ## Arranque rápido
 
 ```bash
 pnpm install
 cp .env.example .env
-pnpm infra:up
+pnpm db:crear
 pnpm db:migrate
 pnpm dev
 ```
 
 `curl localhost:3000/health` debe responder `200` con `"estado": "operativo"`. En otra terminal, `pnpm worker` procesa los trabajos en cola.
 
-Servicios locales de `pnpm infra:up`:
+`pnpm db:crear` crea en tu PostgreSQL el rol `vanguardia` y las bases `vanguardia` y `vanguardia_test` (se puede correr varias veces). Usa tu usuario del sistema como administrador; si no es superusuario, define `ADMIN_DATABASE_URL`.
 
-| Servicio                  | Dirección                                          | Uso                                                               |
-| ------------------------- | -------------------------------------------------- | ----------------------------------------------------------------- |
-| PostgreSQL 17             | `localhost:5432`                                   | Bases `vanguardia` y `vanguardia_test`                            |
-| S3 compatible (SeaweedFS) | `localhost:9000`                                   | Bucket privado `vanguardia-dev` con cifrado del lado del servidor |
-| Mailpit                   | SMTP `localhost:1025`, web <http://localhost:8025> | Correos de desarrollo                                             |
+| Pieza         | En desarrollo                                                                             | En servidores                                                                           |
+| ------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| Base de datos | PostgreSQL local                                                                          | PostgreSQL 17 o superior                                                                |
+| Archivos      | Carpeta `tmp/almacenamiento`; la API sirve las URL firmadas en `/archivos-locales/…`      | Bucket privado S3 compatible (`ALMACENAMIENTO_PROVEEDOR=s3`, obligatorio en producción) |
+| Cola          | pg-boss en la misma base                                                                  | Igual                                                                                   |
+| Correo        | Simulado. Opcional: `brew install mailpit` y `CORREO_PROVEEDOR=smtp` con `localhost:1025` | Proveedor SMTP transaccional                                                            |
+| Push          | Simulado                                                                                  | Firebase Cloud Messaging                                                                |
+
+Para probar desde un teléfono o emulador, ajusta `API_URL_PUBLICA` (por ejemplo `http://10.0.2.2:3000` en el emulador de Android): con ella se arman las URL firmadas de los archivos.
 
 ## Scripts
 
@@ -39,11 +45,11 @@ Servicios locales de `pnpm infra:up`:
 | `pnpm worker`                                                           | Proceso de trabajos en cola (OCR, paquete PDF, push, correo)                      |
 | `pnpm test` / `pnpm test:watch`                                         | Pruebas con Jest contra `vanguardia_test` (se reinicia y migra en cada corrida)   |
 | `pnpm lint` / `pnpm format` / `pnpm format:check`                       | ESLint y Prettier                                                                 |
+| `pnpm db:crear`                                                         | Crea el rol y las bases locales si no existen                                     |
 | `pnpm db:migrate` / `pnpm db:migrate:undo` / `pnpm db:migrate:undo:all` | Migraciones con sequelize-cli                                                     |
 | `pnpm db:seed`                                                          | Seeders                                                                           |
 | `pnpm db:reset`                                                         | Borra la base local, migra y siembra (se niega en producción y con bases remotas) |
 | `pnpm openapi`                                                          | Genera `docs/openapi.json`                                                        |
-| `pnpm infra:up` / `pnpm infra:down`                                     | Levanta o baja la infraestructura local                                           |
 
 ## Procesos
 

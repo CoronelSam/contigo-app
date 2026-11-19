@@ -8,7 +8,7 @@ require('../src/config/database'); // carga .env si existe
 
 const { Client } = require('pg');
 
-const HOSTS_LOCALES = new Set(['localhost', '127.0.0.1', '::1', '[::1]', 'postgres']);
+const HOSTS_LOCALES = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
 
 async function main() {
   const entorno = process.env.NODE_ENV ?? 'development';
