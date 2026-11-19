@@ -33,6 +33,11 @@ services:
     volumes:
       - s3-datos:/data
       - ./infra/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O /dev/null http://127.0.0.1:8333/healthz']
+      interval: 3s
+      timeout: 3s
+      retries: 30
 
   mailpit:
     image: axllent/mailpit:v1.27
