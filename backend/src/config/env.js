@@ -39,6 +39,7 @@ const esquema = z
     S3_SECRET_KEY: opcional,
     S3_FORCE_PATH_STYLE: booleano(false),
     URL_FIRMADA_SEGUNDOS: z.coerce.number().int().min(30).max(3600).default(300),
+    ARCHIVOS_MAX_MB: z.coerce.number().int().min(1).max(50).default(10),
 
     COLA_PROVEEDOR: z.enum(['pgboss', 'memoria']).optional(),
 
@@ -136,6 +137,7 @@ function cargarConfig(env = process.env) {
       forcePathStyle: e.S3_FORCE_PATH_STYLE,
       urlFirmadaSegundos: e.URL_FIRMADA_SEGUNDOS,
     }),
+    archivos: Object.freeze({ maxBytes: e.ARCHIVOS_MAX_MB * 1024 * 1024 }),
     cola: Object.freeze({
       proveedor: e.COLA_PROVEEDOR ?? (entorno === 'test' ? 'memoria' : 'pgboss'),
     }),
