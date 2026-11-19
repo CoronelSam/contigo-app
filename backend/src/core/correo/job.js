@@ -1,13 +1,13 @@
 'use strict';
 
-// Stub del trabajo "correo.enviar". Lo implementa el agente 02 (Núcleo de dominio).
+// Trabajo "correo.enviar": envía un correo encolado con encolarCorreo().
 
-const { NoImplementado } = require('../errores');
+const { enviarCorreo } = require('./index');
 
 /**
- * @param {object} _datos { plantilla, para, idioma, variables }
+ * @param {{ plantilla: string, para: string, idioma?: 'es' | 'en', variables?: object }} datos
  * @param {{ trabajo: object, logger: import('pino').Logger }} _contexto
  */
-module.exports = async function enviarCorreo(_datos, _contexto) {
-  throw new NoImplementado('El trabajo correo.enviar');
+module.exports = async function enviarCorreoEncolado(datos, _contexto) {
+  await enviarCorreo(datos);
 };
