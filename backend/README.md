@@ -82,6 +82,36 @@ test/               # setup de Jest; helpers (limpiarBase, tokenPara) y factorie
 - Los esquemas importan `z` desde `src/openapi/zod.js` y cada endpoint se documenta con `registrarRuta()` de `src/openapi/registro.js`.
 - Los logs nunca incluyen cuerpos de petición, query strings, tokens ni contraseñas.
 
+## Núcleo compartido (`src/core`)
+
+```js
+router.get(
+  '/solicitudes/:id/algo',
+  requiereAuth,
+  requierePermiso('solicitud.leer'),
+  async (req, res) => {
+    const solicitud = await obtenerSolicitudConAcceso(req.usuario, req.params.id); // 404 sin relación
+    // ...
+  },
+);
+```
+
+| Pieza                    | Qué ofrece                                                                                                                                                                                     |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core/auth`              | `requiereAuth` (JWT + sesión vigente + usuario activo → `req.usuario`) y `requierePermiso(...codigos)`                                                                                         |
+| `core/acceso`            | `obtenerSolicitudConAcceso`, `obtenerPacienteConAcceso`, `filtroSolicitudesVisibles`, `puedeEditar` / `exigirEdicion`, `usuariosFamiliaDe`, `coordinadoresDe`                                  |
+| `core/estados`           | `cambiarEstado` (única forma de cambiar el estado: valida transición y rol, historial, bitácora, notificaciones y evento), `registrarCreacion`, `actualizarCamposRuta`, `transicionesPosibles` |
+| `core/expediente`        | Lista única de secciones y `estadoExpediente` (faltantes y `listoParaConfirmar` por etapa)                                                                                                     |
+| `core/archivos`          | `guardarArchivo` (tipo por contenido, hash, dimensiones), `urlFirmada` (registra el acceso), `subidaEnMemoria` (multer)                                                                        |
+| `core/notificaciones`    | `notificar` (bandeja en el idioma de cada usuario + push en cola) y las plantillas es/en                                                                                                       |
+| `core/correo`            | `enviarCorreo`, `encolarCorreo` y plantillas es/en; en desarrollo los correos simulados quedan en `tmp/correos`                                                                                |
+| `core/auditoria`         | `registrarBitacora`, `auditarCambio`, `registrarAcceso` (usuario e IP salen del contexto)                                                                                                      |
+| `core/eventos`           | `emitirTrasCommit` y `suscribir` (lista cerrada de eventos)                                                                                                                                    |
+| `core/http/idempotencia` | Middleware `idempotente()` para `Idempotency-Key`                                                                                                                                              |
+| `core/contexto`          | Usuario, IP y dispositivo de la petición con AsyncLocalStorage                                                                                                                                 |
+
+En pruebas: `appDePrueba(router)` de `test/helpers/app.js` monta un router con el mismo andamiaje que la API.
+
 ## Base de datos
 
 - 43 tablas creadas con migraciones de sequelize-cli (`src/db/migrations`), todas reversibles. Llaves UUID con `gen_random_uuid()`, salvo departamentos y municipios (código oficial).

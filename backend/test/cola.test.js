@@ -66,10 +66,13 @@ describe('src/jobs.js', () => {
     expect(Object.keys(trabajos).sort()).toEqual([...T.NOMBRES].sort());
   });
 
-  test.each(T.NOMBRES)('el stub de %s lanza NoImplementado', async (nombre) => {
-    const handler = trabajos[nombre]();
-    await expect(handler({}, { trabajo: {}, logger: console })).rejects.toBeInstanceOf(
-      NoImplementado,
-    );
-  });
+  test.each(T.NOMBRES.filter((n) => n !== T.CORREO_ENVIAR))(
+    'el stub de %s lanza NoImplementado',
+    async (nombre) => {
+      const handler = trabajos[nombre]();
+      await expect(handler({}, { trabajo: {}, logger: console })).rejects.toBeInstanceOf(
+        NoImplementado,
+      );
+    },
+  );
 });
