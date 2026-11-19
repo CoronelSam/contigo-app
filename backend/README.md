@@ -2,7 +2,7 @@
 
 API REST y procesos en segundo plano de Vanguardia: reúne la información médica y los documentos de cada niño, sugiere una ruta de atención (Honduras, Hospital Shriners México o programa internacional en Tampa), registra la decisión y da seguimiento al caso.
 
-Node.js 24 · Express 5 · PostgreSQL 17 o superior + Sequelize 6 · pg-boss · almacenamiento en disco (desarrollo) o S3 (servidores) · Zod + OpenAPI 3.1 · Jest.
+Node.js 24 · Express 5 · PostgreSQL 17 o superior + Sequelize 6 · pg-boss · almacenamiento en disco (desarrollo) o Cloudflare R2 (servidores) · Zod + OpenAPI 3.1 · Jest.
 
 ## Requisitos
 
@@ -26,13 +26,13 @@ pnpm dev
 
 `pnpm db:crear` crea en tu PostgreSQL el rol `vanguardia` y las bases `vanguardia` y `vanguardia_test` (se puede correr varias veces). Usa tu usuario del sistema como administrador; si no es superusuario, define `ADMIN_DATABASE_URL`.
 
-| Pieza         | En desarrollo                                                                             | En servidores                                                                           |
-| ------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| Base de datos | PostgreSQL local                                                                          | PostgreSQL 17 o superior                                                                |
-| Archivos      | Carpeta `tmp/almacenamiento`; la API sirve las URL firmadas en `/archivos-locales/…`      | Bucket privado S3 compatible (`ALMACENAMIENTO_PROVEEDOR=s3`, obligatorio en producción) |
-| Cola          | pg-boss en la misma base                                                                  | Igual                                                                                   |
-| Correo        | Simulado. Opcional: `brew install mailpit` y `CORREO_PROVEEDOR=smtp` con `localhost:1025` | Proveedor SMTP transaccional                                                            |
-| Push          | Simulado                                                                                  | Firebase Cloud Messaging                                                                |
+| Pieza         | En desarrollo                                                                             | En servidores                                                                                            |
+| ------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Base de datos | PostgreSQL local                                                                          | PostgreSQL 17 o superior                                                                                 |
+| Archivos      | Carpeta `tmp/almacenamiento`; la API sirve las URL firmadas en `/archivos-locales/…`      | Bucket privado de Cloudflare R2 por su API S3 (`ALMACENAMIENTO_PROVEEDOR=s3`, obligatorio en producción) |
+| Cola          | pg-boss en la misma base                                                                  | Igual                                                                                                    |
+| Correo        | Simulado. Opcional: `brew install mailpit` y `CORREO_PROVEEDOR=smtp` con `localhost:1025` | Proveedor SMTP transaccional                                                                             |
+| Push          | Simulado                                                                                  | Firebase Cloud Messaging                                                                                 |
 
 Para probar desde un teléfono o emulador, ajusta `API_URL_PUBLICA` (por ejemplo `http://10.0.2.2:3000` en el emulador de Android): con ella se arman las URL firmadas de los archivos.
 

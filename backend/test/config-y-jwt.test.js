@@ -39,7 +39,40 @@ describe('config/env', () => {
         JWT_SECRET: SECRETO,
         ALMACENAMIENTO_PROVEEDOR: 's3',
       }),
-    ).toThrow(/S3_BUCKET/);
+    ).toThrow(/S3_ENDPOINT[\s\S]*S3_BUCKET/);
+  });
+
+  test('con s3 usa la región auto de Cloudflare R2', () => {
+    const cfg = cargarConfig({
+      NODE_ENV: 'development',
+      DATABASE_URL: 'postgres://l/db',
+      JWT_SECRET: SECRETO,
+      ALMACENAMIENTO_PROVEEDOR: 's3',
+      S3_ENDPOINT: 'https://cuenta-ficticia.r2.cloudflarestorage.com',
+      S3_BUCKET: 'vanguardia-archivos',
+      S3_ACCESS_KEY: 'clave',
+      S3_SECRET_KEY: 'secreto',
+    });
+    expect(cfg.almacenamiento.region).toBe('auto');
+    expect(cfg.almacenamiento.endpoint).toBe('https://cuenta-ficticia.r2.cloudflarestorage.com');
+  });
+
+  test('el endpoint de R2 debe ser una URL https en producción', () => {
+    const base = {
+      NODE_ENV: 'production',
+      DATABASE_URL: 'postgres://l/db',
+      JWT_SECRET: SECRETO,
+      ALMACENAMIENTO_PROVEEDOR: 's3',
+      S3_BUCKET: 'vanguardia-archivos',
+      S3_ACCESS_KEY: 'clave',
+      S3_SECRET_KEY: 'secreto',
+    };
+    expect(() => cargarConfig({ ...base, S3_ENDPOINT: 'cuenta-ficticia' })).toThrow(
+      /S3_ENDPOINT: debe ser una URL completa/,
+    );
+    expect(() =>
+      cargarConfig({ ...base, S3_ENDPOINT: 'http://cuenta-ficticia.r2.cloudflarestorage.com' }),
+    ).toThrow(/S3_ENDPOINT: debe usar https en producción/);
   });
 
   test('en producción el almacenamiento debe ser s3', () => {

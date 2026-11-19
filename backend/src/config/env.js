@@ -33,7 +33,8 @@ const esquema = z
     ALMACENAMIENTO_DIRECTORIO: z.string().default('tmp/almacenamiento'),
     S3_ENDPOINT: opcional,
     S3_ENDPOINT_PUBLICO: opcional,
-    S3_REGION: z.string().default('us-east-1'),
+    // Cloudflare R2: la región siempre es "auto".
+    S3_REGION: z.string().default('auto'),
     S3_BUCKET: opcional,
     S3_ACCESS_KEY: opcional,
     S3_SECRET_KEY: opcional,
@@ -70,8 +71,15 @@ const esquema = z
     if (e.NODE_ENV !== 'test' && !e.DATABASE_URL) falta('DATABASE_URL', 'fuera de pruebas');
 
     if (e.ALMACENAMIENTO_PROVEEDOR === 's3') {
-      for (const campo of ['S3_BUCKET', 'S3_ACCESS_KEY', 'S3_SECRET_KEY']) {
+      for (const campo of ['S3_ENDPOINT', 'S3_BUCKET', 'S3_ACCESS_KEY', 'S3_SECRET_KEY']) {
         if (!e[campo]) falta(campo, 'con ALMACENAMIENTO_PROVEEDOR=s3');
+      }
+      for (const campo of ['S3_ENDPOINT', 'S3_ENDPOINT_PUBLICO']) {
+        if (e[campo] && !URL.canParse(e[campo])) {
+          ctx.addIssue({ code: 'custom', path: [campo], message: 'debe ser una URL completa' });
+        } else if (e[campo] && e.NODE_ENV === 'production' && !e[campo].startsWith('https://')) {
+          ctx.addIssue({ code: 'custom', path: [campo], message: 'debe usar https en producción' });
+        }
       }
     }
     if (e.CORREO_PROVEEDOR === 'smtp' && !e.SMTP_HOST)

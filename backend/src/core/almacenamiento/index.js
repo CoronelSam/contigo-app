@@ -5,7 +5,7 @@
 //
 // Proveedores (ALMACENAMIENTO_PROVEEDOR):
 //   - disco: carpeta local, para desarrollo sin servicios externos (por defecto).
-//   - s3: cualquier S3 compatible, para servidores (obligatorio en producción).
+//   - s3: Cloudflare R2 por su API S3, para servidores (obligatorio en producción).
 //   - memoria: pruebas automáticas.
 // El registro en la tabla `archivos` y el registro de accesos los hace core/archivos (agente 02).
 
@@ -37,7 +37,7 @@ module.exports = {
   /** Proveedor activo: 'disco', 's3' o 'memoria'. */
   proveedor: () => config().almacenamiento.proveedor,
   /**
-   * Sube un objeto (con cifrado del lado del servidor en S3).
+   * Sube un objeto. R2 lo cifra en reposo (AES-256) sin configuración.
    * @param {{ clave: string, cuerpo: Buffer | Uint8Array | string, mime: string }} p
    */
   subirObjeto: (p) => obtener().subirObjeto(p),
