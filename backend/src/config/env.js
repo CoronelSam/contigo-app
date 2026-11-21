@@ -28,6 +28,9 @@ const esquema = z
     JWT_SECRET: z.string().min(32, 'debe tener al menos 32 caracteres'),
     JWT_ACCESS_TTL: z.string().default('15m'),
     REFRESH_TTL_DIAS: z.coerce.number().int().positive().default(30),
+    AUTH_LIMITE_LOGIN: z.coerce.number().int().positive().default(20),
+    AUTH_LIMITE_RECUPERAR: z.coerce.number().int().positive().default(5),
+    AUTH_LIMITE_REENVIO: z.coerce.number().int().positive().default(3),
 
     ALMACENAMIENTO_PROVEEDOR: z.enum(['disco', 's3', 'memoria']).default('disco'),
     ALMACENAMIENTO_DIRECTORIO: z.string().default('tmp/almacenamiento'),
@@ -132,6 +135,11 @@ function cargarConfig(env = process.env) {
       secreto: e.JWT_SECRET,
       accesoTtl: e.JWT_ACCESS_TTL,
       refreshTtlDias: e.REFRESH_TTL_DIAS,
+      limites: Object.freeze({
+        loginPor15Min: e.AUTH_LIMITE_LOGIN,
+        recuperarPorHora: e.AUTH_LIMITE_RECUPERAR,
+        reenvioPorHora: e.AUTH_LIMITE_REENVIO,
+      }),
     }),
     almacenamiento: Object.freeze({
       proveedor: e.ALMACENAMIENTO_PROVEEDOR,

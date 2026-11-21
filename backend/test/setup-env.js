@@ -18,6 +18,10 @@ Object.assign(process.env, {
   PUSH_PROVEEDOR: 'simulado',
   OCR_PROVEEDOR: 'simulado',
   DOCS_HABILITADAS: 'true',
+  // Límites altos para que no interfieran; las pruebas de límites crean los suyos.
+  AUTH_LIMITE_LOGIN: '10000',
+  AUTH_LIMITE_RECUPERAR: '10000',
+  AUTH_LIMITE_REENVIO: '10000',
   // Pruebas silenciosas salvo que se pida otra cosa: TEST_LOG_LEVEL=debug pnpm test
   LOG_LEVEL: process.env.TEST_LOG_LEVEL ?? 'silent',
 });
