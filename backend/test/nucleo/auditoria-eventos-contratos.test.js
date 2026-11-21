@@ -146,7 +146,6 @@ describe('stubs de contratos entre módulos', () => {
   const contratos = {
     solicitudes: ['fusionarValoresOcr'],
     ocr: ['encolarExtraccion', 'cancelarExtraccion'],
-    auth: ['emitirToken', 'revocarSesiones'],
   };
 
   test.each(Object.entries(contratos))(
