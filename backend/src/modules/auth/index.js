@@ -1,10 +1,12 @@
 'use strict';
 
-// Router del módulo "auth". Define rutas completas relativas a /api/v1 y pon los middlewares
-// de autenticación y permisos en cada ruta: nunca uses router.use() con ellos.
+// Módulo auth (agente 03): /auth/* y /me*.
+// Rutas completas relativas a /api/v1; los middlewares de auth y límites van en cada ruta.
 
 const { Router } = require('express');
 
 const router = Router();
+router.use(require('./auth.routes'));
+router.use(require('./perfil.routes'));
 
 module.exports = router;
