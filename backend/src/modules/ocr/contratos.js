@@ -1,10 +1,8 @@
 'use strict';
 
-// Contratos del módulo OCR (dueño: agente 07). Stub creado por el agente 02:
-// el agente 07 implementa el cuerpo SIN cambiar la firma. Los usan los agentes 06 y 11.
+// Contratos del módulo OCR (dueño: agente 07). Los usan los agentes 06 y 11.
 
-const { z } = require('../../openapi/zod');
-const { NoImplementado } = require('../../core/errores');
+const { esquemaZonasOcr } = require('./zonas');
 
 /**
  * Crea la extracción `en_cola` del documento y encola `ocr.procesar` tras el commit.
@@ -13,9 +11,8 @@ const { NoImplementado } = require('../../core/errores');
  * @param {{ documentoId: string, transaction: import('sequelize').Transaction }} p
  * @returns {Promise<object | null>} La extracción creada, o null.
  */
-// eslint-disable-next-line no-unused-vars
 async function encolarExtraccion({ documentoId, transaction }) {
-  throw new NoImplementado('encolarExtraccion (agente 07)');
+  return require('./extracciones.service').encolarExtraccion({ documentoId, transaction });
 }
 
 /**
@@ -24,15 +21,12 @@ async function encolarExtraccion({ documentoId, transaction }) {
  * @param {{ documentoId: string, transaction: import('sequelize').Transaction }} p
  * @returns {Promise<boolean>} true si había una extracción que cancelar.
  */
-// eslint-disable-next-line no-unused-vars
 async function cancelarExtraccion({ documentoId, transaction }) {
-  throw new NoImplementado('cancelarExtraccion (agente 07)');
+  return require('./extracciones.service').cancelarExtraccion({ documentoId, transaction });
 }
 
 /**
- * Esquema de `plantillas_formulario.zonas_ocr` (ver brief 07). El agente 11 lo usa al
- * registrar plantillas. Hasta que el agente 07 lo defina, acepta cualquier valor.
+ * Esquema de `plantillas_formulario.zonas_ocr` (ver zonas.js). El agente 11 lo usa al registrar
+ * plantillas. No admite un tipo `firma`.
  */
-const esquemaZonasOcr = z.any();
-
 module.exports = { encolarExtraccion, cancelarExtraccion, esquemaZonasOcr };
