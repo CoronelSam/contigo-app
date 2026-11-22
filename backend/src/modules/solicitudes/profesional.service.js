@@ -46,9 +46,10 @@ async function existeEnCatalogo(tipo, codigo, transaction) {
   );
 }
 
-/** Se llama después del commit: estadoExpediente lanza consultas en paralelo. */
-async function formatear(profesional, solicitudId) {
-  const { profesional: estado } = await estadoExpediente(solicitudId);
+async function formatear(profesional, transaction) {
+  const { profesional: estado } = await estadoExpediente(profesional.solicitudId, {
+    transaction,
+  });
   return {
     nombre: profesional?.nombre ?? null,
     especialidad: profesional?.especialidad ?? null,
@@ -68,7 +69,7 @@ async function formatear(profesional, solicitudId) {
  */
 async function guardarProfesional(usuario, solicitudId, cambios) {
   const { sequelize, ProfesionalSalud } = modelos();
-  const profesional = await sequelize.transaction(async (transaction) => {
+  return sequelize.transaction(async (transaction) => {
     const solicitud = await obtenerSolicitudConAcceso(usuario, solicitudId, { transaction });
     await exigirEdicion(usuario, solicitud, { seccion: 'profesional_salud', transaction });
 
@@ -91,13 +92,13 @@ async function guardarProfesional(usuario, solicitudId, cambios) {
     const aplicar = Object.fromEntries(
       CAMPOS.filter((c) => cambios[c] !== undefined).map((c) => [c, cambios[c]]),
     );
-    return auditarCambio(fila, aplicar, {
+    await auditarCambio(fila, aplicar, {
       transaction,
       accion: 'profesionales_salud.guardar',
       solicitudId: solicitud.id,
     });
+    return formatear(fila, transaction);
   });
-  return formatear(profesional, profesional.solicitudId);
 }
 
 module.exports = { guardarProfesional, documentoDeLaSolicitud, TIPO_CERTIFICACION };

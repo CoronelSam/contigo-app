@@ -212,15 +212,13 @@ async function obtenerResumen(usuario, solicitudId) {
  */
 async function enviar(usuario, solicitudId) {
   const { sequelize } = modelos();
-  // Los faltantes se calculan antes de abrir la transacción: estadoExpediente lanza consultas en
-  // paralelo y no deben ir por la misma conexión ni esperar otra mientras esta sigue tomada.
-  const previa = await obtenerSolicitudConAcceso(usuario, solicitudId);
-  const { faltantes } = await estadoExpediente(previa.id);
   return sequelize.transaction(async (transaction) => {
     const solicitud = await obtenerSolicitudConAcceso(usuario, solicitudId, {
       transaction,
       lock: transaction.LOCK.UPDATE,
     });
+    // Con la solicitud bloqueada: los faltantes son los del momento exacto del envío.
+    const { faltantes } = await estadoExpediente(solicitud.id, { transaction });
     await cambiarEstado({
       solicitud,
       a: E.EN_REVISION,
