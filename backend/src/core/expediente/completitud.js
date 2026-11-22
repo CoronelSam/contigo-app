@@ -21,6 +21,8 @@ const TIPOS_CONSENTIMIENTO = Object.freeze([
   'condiciones_atencion',
 ]);
 
+const TIPO_CERTIFICACION = 'certificacion_medica';
+
 /** Estados de extracción que significan "el OCR todavía no está revisado". */
 const OCR_PENDIENTE = new Set(['en_cola', 'procesando', 'por_confirmar', 'fallida']);
 
@@ -32,6 +34,21 @@ async function leerConfiguracion(claves, transaction) {
   return Object.fromEntries(filas.map((f) => [f.clave, f.valor]));
 }
 
+/**
+ * Corre las consultas en paralelo, salvo dentro de una transacción: ahí comparten una sola
+ * conexión y `pg` no admite consultas simultáneas en la misma conexión (error en pg@9).
+ * @template T
+ * @param {import('sequelize').Transaction | undefined} transaction
+ * @param {Array<() => Promise<T>>} tareas
+ * @returns {Promise<T[]>}
+ */
+async function consultar(transaction, tareas) {
+  if (!transaction) return Promise.all(tareas.map((t) => t()));
+  const resultados = [];
+  for (const tarea of tareas) resultados.push(await tarea());
+  return resultados;
+}
+
 /** Rutas de requisitos activas según el paquete fijado y la ruta decidida. */
 function rutasActivas(solicitud) {
   const rutas = [RUTAS_REQUISITO.EVALUACION];
@@ -40,9 +57,14 @@ function rutasActivas(solicitud) {
   return rutas;
 }
 
+/**
+ * La certificación es el documento vigente del tipo `certificacion_medica` (hay a lo sumo uno por
+ * solicitud). Se busca por tipo y no por `documento_certificacion_id` para que una versión nueva
+ * del documento cuente aunque el vínculo siga apuntando a la anterior.
+ */
 function estadoProfesional(profesional, documentos) {
   if (!profesional) return 'vacia';
-  const certificacion = documentos.find((d) => d.id === profesional.documentoCertificacionId);
+  const certificacion = documentos.find((d) => d.tipoDocumento?.codigo === TIPO_CERTIFICACION);
   const completo =
     profesional.nombre &&
     profesional.especialidad &&
@@ -78,21 +100,28 @@ async function estadoExpediente(solicitudId, { transaction } = {}) {
   const { etapa, modalidad } = solicitud;
 
   const [filasSecciones, requisitos, documentos, profesional, consentimientos, config] =
-    await Promise.all([
-      SolicitudSeccion.findAll({ where: { solicitudId }, transaction }),
-      RequisitoRuta.findAll({
-        where: { ruta: rutasActivas(solicitud), activo: true },
-        include: [{ association: 'tipoDocumento' }],
-        order: [['orden', 'ASC']],
-        transaction,
-      }),
-      Documento.findAll({ where: { solicitudId, vigente: true }, transaction }),
-      ProfesionalSalud.findOne({ where: { solicitudId }, transaction }),
-      Consentimiento.findAll({ where: { solicitudId }, transaction }),
-      leerConfiguracion(
-        ['consentimientos.requieren_firma', 'paquete.bloquear_firmas_pendientes'],
-        transaction,
-      ),
+    await consultar(transaction, [
+      () => SolicitudSeccion.findAll({ where: { solicitudId }, transaction }),
+      () =>
+        RequisitoRuta.findAll({
+          where: { ruta: rutasActivas(solicitud), activo: true },
+          include: [{ association: 'tipoDocumento' }],
+          order: [['orden', 'ASC']],
+          transaction,
+        }),
+      () =>
+        Documento.findAll({
+          where: { solicitudId, vigente: true },
+          include: [{ association: 'tipoDocumento', attributes: ['codigo'] }],
+          transaction,
+        }),
+      () => ProfesionalSalud.findOne({ where: { solicitudId }, transaction }),
+      () => Consentimiento.findAll({ where: { solicitudId }, transaction }),
+      () =>
+        leerConfiguracion(
+          ['consentimientos.requieren_firma', 'paquete.bloquear_firmas_pendientes'],
+          transaction,
+        ),
     ]);
 
   const extracciones = documentos.length

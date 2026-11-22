@@ -211,4 +211,77 @@ describe('estado del expediente', () => {
       status: 404,
     });
   });
+
+  test('la certificación es la versión vigente de su tipo, aunque el vínculo apunte a la anterior', async () => {
+    const s = await f.crearSolicitud({ estado: 'CAPTURA', modalidad: 'fotos' });
+    await completarProfesional(s);
+    const anterior = await db.Documento.findOne({ where: { solicitudId: s.id } });
+    expect((await estadoExpediente(s.id)).profesional.estado).toBe('completa');
+
+    // 06 reemplaza la certificación: la versión nueva cuenta y la anterior ya no.
+    await anterior.update({ vigente: false });
+    const nueva = await f.crearDocumento({
+      solicitud: s,
+      tipo: 'certificacion_medica',
+      version: 2,
+      reemplazaA: anterior.id,
+      estado: 'CAPTURADO',
+    });
+    expect((await estadoExpediente(s.id)).profesional.estado).toBe('completa');
+
+    await nueva.update({ estado: 'RECHAZADO' });
+    expect((await estadoExpediente(s.id)).profesional.estado).toBe('incompleta');
+  });
+});
+
+describe('estado del expediente dentro de una transacción', () => {
+  beforeEach(() => limpiarBase());
+
+  /** Cuenta cuántas consultas hay a la vez en la conexión de la transacción. */
+  function contarSimultaneas(transaction) {
+    const cliente = transaction.connection;
+    const original = cliente.query;
+    const medida = { enCurso: 0, maximo: 0 };
+    cliente.query = function consultaContada(...args) {
+      medida.enCurso += 1;
+      medida.maximo = Math.max(medida.maximo, medida.enCurso);
+      const fin = args.length - 1;
+      if (typeof args[fin] === 'function') {
+        const callback = args[fin];
+        args[fin] = (...resultado) => {
+          medida.enCurso -= 1;
+          callback(...resultado);
+        };
+        return original.apply(this, args);
+      }
+      return Promise.resolve(original.apply(this, args)).finally(() => {
+        medida.enCurso -= 1;
+      });
+    };
+    medida.restaurar = () => {
+      cliente.query = original;
+    };
+    return medida;
+  }
+
+  test('da el mismo resultado y nunca lanza 2 consultas a la vez en la misma conexión', async () => {
+    const s = await f.crearSolicitud({ estado: 'EN_REVISION', modalidad: 'fotos' });
+    await completarSecciones(s, ['informacion_medica']);
+    await f.crearDocumento({ solicitud: s, tipo: 'fotos_condicion', estado: 'VALIDADO' });
+    const fuera = await estadoExpediente(s.id);
+
+    let maximo;
+    const dentro = await db.sequelize.transaction(async (transaction) => {
+      const medida = contarSimultaneas(transaction);
+      try {
+        return await estadoExpediente(s.id, { transaction });
+      } finally {
+        medida.restaurar();
+        maximo = medida.maximo;
+      }
+    });
+
+    expect(maximo).toBe(1);
+    expect(dentro).toEqual(fuera);
+  });
 });
