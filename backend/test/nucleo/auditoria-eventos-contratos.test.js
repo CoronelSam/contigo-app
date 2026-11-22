@@ -6,7 +6,6 @@ const { limpiarBase } = require('../helpers/db');
 const contexto = require('../../src/core/contexto');
 const auditoria = require('../../src/core/auditoria');
 const eventos = require('../../src/core/eventos');
-const { NoImplementado } = require('../../src/core/errores');
 
 const { sequelize } = db;
 
@@ -142,24 +141,20 @@ describe('eventos de dominio', () => {
   });
 });
 
-describe('stubs de contratos entre módulos', () => {
-  const contratos = {
-    ocr: ['encolarExtraccion', 'cancelarExtraccion'],
-  };
+describe('contratos entre módulos', () => {
+  // Ya los implementaron sus dueños (03, 05 y 07); sus pruebas están en cada módulo.
+  test.each([
+    ['auth', ['emitirToken', 'revocarSesiones']],
+    ['solicitudes', ['fusionarValoresOcr']],
+    ['ocr', ['encolarExtraccion', 'cancelarExtraccion']],
+  ])('modules/%s/contratos.js exporta sus funciones', (modulo, funciones) => {
+    const m = require(`../../src/modules/${modulo}/contratos`);
+    for (const nombre of funciones) expect(typeof m[nombre]).toBe('function');
+  });
 
-  test.each(Object.entries(contratos))(
-    'modules/%s/contratos.js exporta sus funciones y lanzan NoImplementado',
-    async (modulo, funciones) => {
-      const m = require(`../../src/modules/${modulo}/contratos`);
-      for (const nombre of funciones) {
-        expect(typeof m[nombre]).toBe('function');
-        await expect(m[nombre]({})).rejects.toBeInstanceOf(NoImplementado);
-      }
-    },
-  );
-
-  test('esquemaZonasOcr acepta cualquier valor mientras el agente 07 lo define', () => {
+  test('esquemaZonasOcr es el esquema Zod de las zonas (agente 07)', () => {
     const { esquemaZonasOcr } = require('../../src/modules/ocr/contratos');
-    expect(esquemaZonasOcr.parse([{ campo: 'x' }])).toEqual([{ campo: 'x' }]);
+    expect(esquemaZonasOcr.safeParse([{ campo: 'x' }]).success).toBe(false);
+    expect(esquemaZonasOcr.safeParse([]).success).toBe(true);
   });
 });

@@ -66,7 +66,8 @@ describe('src/jobs.js', () => {
     expect(Object.keys(trabajos).sort()).toEqual([...T.NOMBRES].sort());
   });
 
-  test.each(T.NOMBRES.filter((n) => n !== T.CORREO_ENVIAR))(
+  // correo.enviar (02) y ocr.procesar (07) ya están implementados.
+  test.each(T.NOMBRES.filter((n) => ![T.CORREO_ENVIAR, T.OCR_PROCESAR].includes(n)))(
     'el stub de %s lanza NoImplementado',
     async (nombre) => {
       const handler = trabajos[nombre]();
