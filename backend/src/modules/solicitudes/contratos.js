@@ -1,9 +1,6 @@
 'use strict';
 
-// Contratos del módulo solicitudes (dueño: agente 05). Stub creado por el agente 02:
-// el agente 05 implementa el cuerpo SIN cambiar la firma. Lo usa el agente 07 (OCR).
-
-const { NoImplementado } = require('../../core/errores');
+// Contratos del módulo solicitudes (dueño: agente 05). Lo usa el agente 07 (OCR).
 
 /**
  * Fusiona en una sección los valores que un humano confirmó en la revisión de OCR.
@@ -12,6 +9,11 @@ const { NoImplementado } = require('../../core/errores');
  * poner `origen = 'ocr'` (o `'mixto'` si ya había datos de la app), recalcular el estado,
  * auditar y emitir `seccion.guardada`. Si un valor no pasa el esquema, lanza 400 VALIDACION con
  * `campos` (por rutaDato) y no guarda nada.
+ *
+ * Detalles de la implementación:
+ * - Un `valor` null borra el campo de esa ruta.
+ * - Una `rutaDato` que no es un JSON Pointer válido responde 400 con `RUTA_INVALIDA`.
+ * - No revisa la ventana de edición: eso lo hace quien llama, con el usuario de la petición.
  *
  * @param {object} p
  * @param {string} p.solicitudId
@@ -22,9 +24,9 @@ const { NoImplementado } = require('../../core/errores');
  * @param {import('sequelize').Transaction} p.transaction
  * @returns {Promise<{ seccion: string, version: number, estado: 'vacia' | 'incompleta' | 'completa' }>}
  */
-// eslint-disable-next-line no-unused-vars
 async function fusionarValoresOcr({ solicitudId, seccion, valores, usuarioId, transaction }) {
-  throw new NoImplementado('fusionarValoresOcr (agente 05)');
+  const { fusionarValoresOcr: fusionar } = require('./secciones.service');
+  return fusionar({ solicitudId, seccion, valores, usuarioId, transaction });
 }
 
 module.exports = { fusionarValoresOcr };
