@@ -1,0 +1,9 @@
+{
+  "_nota": "Resultados del motor simulado por nombre de campo. Datos ficticios. Un campo que no está aquí recibe un valor por defecto según su tipo, con confianza 0.9.",
+  "diagnostico": { "valor": "Diagnóstico ficticio", "confianza": 0.95 },
+  "fecha_inicio": { "valor": "01/02/2020", "confianza": 0.62 },
+  "peso_nacer": { "valor": "3,2", "confianza": 0.71 },
+  "tipo_parto_vaginal": { "valor": "false", "confianza": 0.97 },
+  "tipo_parto_cesarea": { "valor": "true", "confianza": 0.93 },
+  "tipo_parto_no_se": { "valor": "false", "confianza": 0.96 }
+}

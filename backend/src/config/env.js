@@ -59,6 +59,9 @@ const esquema = z
     FCM_CREDENCIALES_JSON_BASE64: opcional,
 
     OCR_PROVEEDOR: z.enum(['simulado', 'tesseract', 'nube']).default('simulado'),
+    OCR_TESSERACT_IDIOMA: z.string().default('spa'),
+    OCR_TESSERACT_DATOS: opcional,
+    OCR_TESSERACT_CACHE: z.string().default('tmp/ocr'),
 
     CORS_ORIGENES: z.string().default(''),
     TRUST_PROXY: z.coerce.number().int().min(0).default(0),
@@ -170,7 +173,14 @@ function cargarConfig(env = process.env) {
       proveedor: e.PUSH_PROVEEDOR,
       credencialesBase64: e.FCM_CREDENCIALES_JSON_BASE64,
     }),
-    ocr: Object.freeze({ proveedor: e.OCR_PROVEEDOR }),
+    ocr: Object.freeze({
+      proveedor: e.OCR_PROVEEDOR,
+      tesseract: Object.freeze({
+        idioma: e.OCR_TESSERACT_IDIOMA,
+        datos: e.OCR_TESSERACT_DATOS,
+        cache: e.OCR_TESSERACT_CACHE,
+      }),
+    }),
     http: Object.freeze({
       corsOrigenes: e.CORS_ORIGENES.split(',')
         .map((o) => o.trim())
