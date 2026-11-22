@@ -82,5 +82,9 @@
   "auth.exigir_correo_verificado": {
     "descripcion": "Si el inicio de sesión exige el correo verificado (decisión pendiente).",
     "valor": false
+  },
+  "asignaciones.varios_voluntarios": {
+    "descripcion": "Si varios voluntarios pueden tener a la vez el mismo caso, por ejemplo en una jornada (decisión pendiente).",
+    "valor": true
   }
 }
