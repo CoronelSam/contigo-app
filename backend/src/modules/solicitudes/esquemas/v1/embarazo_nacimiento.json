@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vanguardia:secciones:v1:embarazo_nacimiento",
+  "title": "Embarazo y nacimiento (14)",
+  "description": "Medicamentos durante el embarazo y UCIN solo se explican si la respuesta es \"sí\".",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "cuidadosPrenatales": {
+      "type": "string",
+      "enum": ["si", "no", "no_se"]
+    },
+    "pesoNacerKg": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 8
+    },
+    "momentoParto": {
+      "type": "string",
+      "enum": ["antes", "en_fecha", "despues", "no_se"]
+    },
+    "tipoParto": {
+      "type": "string",
+      "enum": ["vaginal", "cesarea", "no_se"]
+    },
+    "nacioDeNalgas": {
+      "type": "string",
+      "enum": ["si", "no", "no_se"]
+    },
+    "medicamentosEmbarazo": {
+      "type": "string",
+      "enum": ["si", "no", "no_se"]
+    },
+    "medicamentosEmbarazoDetalle": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "ucin": {
+      "type": "string",
+      "enum": ["si", "no", "no_se"]
+    },
+    "ucinDetalle": {
+      "type": "string",
+      "maxLength": 1000
+    }
+  },
+  "obligatorios": [
+    "cuidadosPrenatales",
+    "momentoParto",
+    "tipoParto",
+    "nacioDeNalgas",
+    "medicamentosEmbarazo",
+    "ucin"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "medicamentosEmbarazo": {
+            "const": "si"
+          }
+        },
+        "required": ["medicamentosEmbarazo"]
+      },
+      "then": {
+        "obligatorios": ["medicamentosEmbarazoDetalle"]
+      },
+      "else": {
+        "properties": {
+          "medicamentosEmbarazoDetalle": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "ucin": {
+            "const": "si"
+          }
+        },
+        "required": ["ucin"]
+      },
+      "then": {
+        "obligatorios": ["ucinDetalle"]
+      },
+      "else": {
+        "properties": {
+          "ucinDetalle": false
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vanguardia:secciones:v1:informacion_medica",
+  "title": "Información médica inicial (13)",
+  "description": "Lo que la familia cuenta del caso. La app registra lo que dice la familia; no determina diagnósticos.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "diagnostico": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "fechaInicio": {
+      "type": "string",
+      "format": "fecha-aproximada",
+      "noFutura": true
+    },
+    "atencionSolicitada": {
+      "type": "string",
+      "catalogo": "tipo_atencion"
+    },
+    "atencionSolicitadaOtra": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "tratamientosPrevios": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "cirugias": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "procedimiento": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "fecha": {
+            "type": "string",
+            "format": "fecha-aproximada",
+            "noFutura": true
+          },
+          "lugar": {
+            "type": "string",
+            "maxLength": 200
+          }
+        },
+        "obligatorios": ["procedimiento"]
+      }
+    },
+    "estudiosDisponibles": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "descripcion": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "fecha": {
+            "type": "string",
+            "format": "fecha-aproximada",
+            "noFutura": true
+          }
+        },
+        "obligatorios": ["descripcion"]
+      }
+    }
+  },
+  "obligatorios": ["diagnostico", "fechaInicio", "atencionSolicitada"],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "atencionSolicitada": {
+            "const": "otra"
+          }
+        },
+        "required": ["atencionSolicitada"]
+      },
+      "then": {
+        "obligatorios": ["atencionSolicitadaOtra"]
+      },
+      "else": {
+        "properties": {
+          "atencionSolicitadaOtra": false
+        }
+      }
+    }
+  ]
+}

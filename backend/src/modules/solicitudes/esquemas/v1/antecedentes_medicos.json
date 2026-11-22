@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vanguardia:secciones:v1:antecedentes_medicos",
+  "title": "Antecedentes médicos (15)",
+  "description": "Un \"sí\" habilita y exige la explicación; con otra respuesta la explicación no aplica.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "condiciones": {
+      "type": "array",
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "catalogo": "condicion_medica"
+      }
+    },
+    "condicionesOtra": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "antecedentesFamiliares": {
+      "type": "string",
+      "enum": ["si", "no", "no_se"]
+    },
+    "antecedentesFamiliaresDetalle": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "cirugiasHospitalizaciones": {
+      "type": "string",
+      "enum": ["si", "no"]
+    },
+    "cirugiasHospitalizacionesDetalle": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "transfusiones": {
+      "type": "string",
+      "enum": ["si", "no", "no_se"]
+    },
+    "transfusionesDetalle": {
+      "type": "string",
+      "maxLength": 1000
+    },
+    "problemasAnestesia": {
+      "type": "string",
+      "enum": ["si", "no", "no_se"]
+    },
+    "problemasAnestesiaDetalle": {
+      "type": "string",
+      "maxLength": 1000
+    }
+  },
+  "obligatorios": [
+    "antecedentesFamiliares",
+    "cirugiasHospitalizaciones",
+    "transfusiones",
+    "problemasAnestesia"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "condiciones": {
+            "type": "array",
+            "contains": {
+              "const": "otra"
+            }
+          }
+        },
+        "required": ["condiciones"]
+      },
+      "then": {
+        "obligatorios": ["condicionesOtra"]
+      },
+      "else": {
+        "properties": {
+          "condicionesOtra": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "antecedentesFamiliares": {
+            "const": "si"
+          }
+        },
+        "required": ["antecedentesFamiliares"]
+      },
+      "then": {
+        "obligatorios": ["antecedentesFamiliaresDetalle"]
+      },
+      "else": {
+        "properties": {
+          "antecedentesFamiliaresDetalle": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "cirugiasHospitalizaciones": {
+            "const": "si"
+          }
+        },
+        "required": ["cirugiasHospitalizaciones"]
+      },
+      "then": {
+        "obligatorios": ["cirugiasHospitalizacionesDetalle"]
+      },
+      "else": {
+        "properties": {
+          "cirugiasHospitalizacionesDetalle": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "transfusiones": {
+            "const": "si"
+          }
+        },
+        "required": ["transfusiones"]
+      },
+      "then": {
+        "obligatorios": ["transfusionesDetalle"]
+      },
+      "else": {
+        "properties": {
+          "transfusionesDetalle": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "problemasAnestesia": {
+            "const": "si"
+          }
+        },
+        "required": ["problemasAnestesia"]
+      },
+      "then": {
+        "obligatorios": ["problemasAnestesiaDetalle"]
+      },
+      "else": {
+        "properties": {
+          "problemasAnestesiaDetalle": false
+        }
+      }
+    }
+  ]
+}
