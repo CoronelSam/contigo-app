@@ -2,6 +2,7 @@
 
 const { sequelize } = require('../../src/models');
 const { sembrarDatosEditables } = require('../../src/db/semillas');
+const { esperarEventos } = require('../../src/core/eventos');
 
 /** Tablas que solo cambian con seeders y que ninguna prueba debe modificar. */
 const TABLAS_FIJAS = ['roles', 'permisos', 'rol_permiso', 'departamentos', 'municipios'];
@@ -20,6 +21,9 @@ const TABLAS_SISTEMA = ['SequelizeMeta', 'SequelizeData'];
  * @param {{ resembrar?: boolean }} [opciones]
  */
 async function limpiarBase({ resembrar = true } = {}) {
+  // Los handlers de eventos corren después del commit y abren sus propias consultas: si uno sigue
+  // corriendo durante el TRUNCATE, puede haber un bloqueo mutuo.
+  await esperarEventos();
   const [filas] = await sequelize.query(
     "SELECT tablename FROM pg_tables WHERE schemaname = 'public'",
   );
