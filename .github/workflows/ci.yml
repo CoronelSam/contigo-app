@@ -2,11 +2,21 @@ name: CI
 
 on:
   push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/ci.yml'
   pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/ci.yml'
 
 jobs:
   calidad:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
 
     services:
       postgres:
@@ -31,11 +41,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: backend/package.json
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .node-version
+          node-version-file: backend/.node-version
           cache: pnpm
+          cache-dependency-path: backend/pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
