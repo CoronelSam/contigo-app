@@ -7,6 +7,8 @@ const { limpiarBase } = require('../../../../test/helpers/db');
 const { api } = require('../../../../test/helpers/app');
 const { tokenPara } = require('../../../../test/helpers/auth');
 const { registrarBitacora } = require('../../../core/auditoria');
+const { cambiarEstado } = require('../../../core/estados');
+const { LISTA_ESTADOS_SOLICITUD: LISTA_ESTADOS } = require('../../../core/estados/constantes');
 
 let coordinador;
 let tc;
@@ -39,11 +41,22 @@ describe('GET /coordinador/resumen y /actividad', () => {
     await caso('EN_EVALUACION');
     await caso('DERIVADA_HN', { rutaDecidida: 'HONDURAS' });
     await caso('CAPTURA');
-    const s = await caso('EN_REVISION');
+
+    // Un cambio de estado real (historial y bitácora a la vez) y 3 acciones más en la bitácora.
+    const familia = await f.crearFamilia();
+    const s = await caso('CAPTURA', { paciente: familia.paciente });
+    await db.sequelize.transaction((transaction) =>
+      cambiarEstado({
+        solicitud: s,
+        a: 'EN_REVISION',
+        usuario: { id: familia.usuario.id, rol: 'familia' },
+        nota: 'Nota del envío (prueba)',
+        transaction,
+      }),
+    );
     await registrarBitacora({
-      accion: 'solicitud.enviar',
-      entidad: 'solicitudes',
-      entidadId: s.id,
+      accion: 'documentos.validar',
+      entidad: 'documentos',
       solicitudId: s.id,
     });
     await registrarBitacora({
@@ -62,18 +75,28 @@ describe('GET /coordinador/resumen y /actividad', () => {
       EN_EVALUACION: 1,
       DERIVADA_HN: 1,
     });
+    // El envío sale una sola vez (del historial, con sus estados y la nota).
     expect(res.body.actividad).toEqual([
+      expect.objectContaining({
+        accion: 'documentos.validar',
+        descripcion: 'Documento validado',
+        estadoNuevo: null,
+      }),
       expect.objectContaining({
         accion: 'solicitud.enviar',
         descripcion: 'Solicitud enviada a revisión',
         codigoCaso: s.codigo,
         solicitudId: s.id,
+        estadoAnterior: 'CAPTURA',
+        estadoNuevo: 'EN_REVISION',
+        nota: 'Nota del envío (prueba)',
+        autor: expect.objectContaining({ id: familia.usuario.id, rol: 'familia' }),
       }),
     ]);
 
     const ingles = await tokenPara(await f.crearUsuario({ rol: 'coordinador', idioma: 'en' }));
-    const actividad = await get('/actividad?limit=5', ingles).expect(200);
-    expect(actividad.body.paginacion).toEqual({ page: 1, limit: 5, total: 1 });
+    const actividad = await get('/actividad?limit=1&page=2', ingles).expect(200);
+    expect(actividad.body.paginacion).toEqual({ page: 2, limit: 1, total: 2 });
     expect(actividad.body.datos[0].descripcion).toBe('Request sent for review');
   });
 });
@@ -94,6 +117,26 @@ describe('GET /solicitudes (tablero)', () => {
 
     const cerrados = await get('/solicitudes?estado=ACEPTADA,ATENDIDA_HN').expect(200);
     expect(cerrados.body.paginacion.total).toBe(2);
+  });
+
+  test('los estados ocultos por defecto se cambian en la configuración', async () => {
+    await caso('BORRADOR');
+    await caso('CAPTURA');
+    await caso('ACEPTADA');
+    const estados = async () =>
+      (await get('/solicitudes').expect(200)).body.datos.map((s) => s.estado).sort();
+    const configurar = (valor) =>
+      db.Configuracion.update({ valor }, { where: { clave: 'tablero.estados_ocultos' } });
+
+    expect(await estados()).toEqual(['CAPTURA']);
+    await configurar(['CAPTURA']);
+    expect(await estados()).toEqual(['ACEPTADA', 'BORRADOR']);
+    // Ocultarlo todo dejaría el tablero vacío: se muestran todos.
+    await configurar(LISTA_ESTADOS);
+    expect(await estados()).toEqual(['ACEPTADA', 'BORRADOR', 'CAPTURA']);
+    // Sin la clave, el valor seguro de siempre.
+    await db.Configuracion.destroy({ where: { clave: 'tablero.estados_ocultos' } });
+    expect(await estados()).toEqual(['CAPTURA']);
   });
 
   test('cada fila trae paciente, ruta, faltantes, voluntarios, coordinador y posible duplicado', async () => {

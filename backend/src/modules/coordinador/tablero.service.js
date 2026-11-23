@@ -2,8 +2,8 @@
 
 // Inicio (42), actividad reciente y tablero (43) del coordinador.
 
-const { Op } = require('sequelize');
 const { ESTADOS_SOLICITUD: E, LISTA_ESTADOS_SOLICITUD } = require('../../core/estados/constantes');
+const { TRANSICIONES } = require('../../core/estados');
 const {
   iso,
   idiomaDe,
@@ -15,7 +15,6 @@ const {
   describir,
   ACCIONES_SIN_ACTIVIDAD,
 } = require('./coordinador.util');
-
 const { formatearCodigo } = require('../solicitudes/codigo');
 
 const modelos = () => require('../../models');
@@ -30,54 +29,88 @@ const ESTADOS_RESUMEN = Object.freeze([
   E.DERIVADA_HN,
 ]);
 
-/** Sin filtro de estado, el tablero muestra los casos en curso (ni borradores ni terminados). */
-const FUERA_DEL_TABLERO = Object.freeze([E.BORRADOR, E.ACEPTADA, E.ATENDIDA_HN]);
-const EN_CURSO = Object.freeze(
-  LISTA_ESTADOS_SOLICITUD.filter((e) => !FUERA_DEL_TABLERO.includes(e)),
-);
+/**
+ * Estados que el tablero oculta sin filtro de estado, si `tablero.estados_ocultos` no existe:
+ * borradores (todavía no llegan al equipo) y casos terminados.
+ */
+const OCULTOS_POR_DEFECTO = Object.freeze([E.BORRADOR, E.ACEPTADA, E.ATENDIDA_HN]);
+
+/** Acciones de la bitácora que son cambios de estado: en la actividad salen del historial. */
+const ACCIONES_DE_ESTADO = Object.freeze(TRANSICIONES.map((t) => `solicitud.${t.accion}`));
 
 const autorDe = (u) =>
   u ? { id: u.id, nombre: nombrePersona(u), rol: u.rol?.codigo ?? '' } : null;
 
+/** Acción (`solicitud.enviar`, …) del cambio de estado de una fila del historial. */
+function accionDeCambio(de, a) {
+  const transicion = TRANSICIONES.find((t) => t.a === a && t.de.includes(de));
+  return `solicitud.${transicion?.accion ?? 'cambio_estado'}`;
+}
+
 /**
- * Actividad reciente desde la bitácora de los casos (cada cambio de estado también queda ahí).
+ * Actividad reciente de los casos: los cambios de estado salen de `historial_estados` (con el
+ * estado anterior, el nuevo y la nota) y el resto de las acciones, de la bitácora. Cada cambio de
+ * estado también está en la bitácora: ahí se omite para no repetirlo.
  * @param {{ idioma?: string }} usuario
  * @param {{ page: number, limit: number }} paginacion
  */
 async function actividad(usuario, { page, limit }) {
-  const { Bitacora } = modelos();
+  const { sequelize, Usuario, Solicitud } = modelos();
   const idioma = idiomaDe(usuario);
-  const { count, rows } = await Bitacora.findAndCountAll({
-    where: {
-      solicitudId: { [Op.ne]: null },
-      accion: { [Op.notIn]: ACCIONES_SIN_ACTIVIDAD },
-    },
-    include: [
-      {
-        association: 'usuario',
-        attributes: ['id', 'nombres', 'apellidos'],
-        include: [{ association: 'rol', attributes: ['codigo'] }],
-      },
-      { association: 'solicitud', attributes: ['codigo'] },
-    ],
-    order: [
-      ['createdAt', 'DESC'],
-      ['id', 'ASC'],
-    ],
-    limit,
-    offset: (page - 1) * limit,
-  });
+  const tipo = { type: sequelize.QueryTypes.SELECT };
+  const union = `
+    FROM (
+      SELECT b.id, b.accion, b.solicitud_id, b.usuario_id, b.created_at,
+             NULL::varchar AS estado_anterior, NULL::varchar AS estado_nuevo, NULL::text AS nota
+        FROM bitacora b
+       WHERE b.solicitud_id IS NOT NULL AND b.accion NOT IN (:excluidas)
+      UNION ALL
+      SELECT h.id, NULL, h.solicitud_id, h.usuario_id, h.created_at,
+             h.estado_anterior, h.estado_nuevo, h.nota
+        FROM historial_estados h
+    ) a`;
+  const replacements = { excluidas: [...ACCIONES_SIN_ACTIVIDAD, ...ACCIONES_DE_ESTADO] };
+
+  const [filas, [{ total }]] = await Promise.all([
+    sequelize.query(
+      `SELECT a.* ${union} ORDER BY a.created_at DESC, a.id ASC LIMIT :limit OFFSET :offset`,
+      { ...tipo, replacements: { ...replacements, limit, offset: (page - 1) * limit } },
+    ),
+    sequelize.query(`SELECT count(*)::int AS total ${union}`, { ...tipo, replacements }),
+  ]);
+
+  const [autores, solicitudes] = await Promise.all([
+    Usuario.findAll({
+      where: { id: [...new Set(filas.map((f) => f.usuario_id).filter(Boolean))] },
+      attributes: ['id', 'nombres', 'apellidos'],
+      include: [{ association: 'rol', attributes: ['codigo'] }],
+    }),
+    Solicitud.findAll({
+      where: { id: [...new Set(filas.map((f) => f.solicitud_id))] },
+      attributes: ['id', 'codigo'],
+    }),
+  ]);
+  const autorPorId = new Map(autores.map((u) => [u.id, u]));
+  const codigoPorId = new Map(solicitudes.map((s) => [s.id, s.codigo]));
+
   return {
-    datos: rows.map((b) => ({
-      id: b.id,
-      accion: b.accion,
-      descripcion: describir(b.accion, idioma),
-      solicitudId: b.solicitudId,
-      codigoCaso: b.solicitud?.codigo ?? null,
-      autor: autorDe(b.usuario),
-      fecha: iso(b.createdAt),
-    })),
-    paginacion: { page, limit, total: count },
+    datos: filas.map((f) => {
+      const esCambio = f.estado_nuevo !== null;
+      const accion = esCambio ? accionDeCambio(f.estado_anterior, f.estado_nuevo) : f.accion;
+      return {
+        id: f.id,
+        accion,
+        descripcion: describir(accion, idioma),
+        solicitudId: f.solicitud_id,
+        codigoCaso: codigoPorId.get(f.solicitud_id) ?? null,
+        autor: autorDe(autorPorId.get(f.usuario_id)),
+        fecha: iso(f.created_at),
+        estadoAnterior: f.estado_anterior ?? null,
+        estadoNuevo: f.estado_nuevo ?? null,
+        nota: f.nota ?? null,
+      };
+    }),
+    paginacion: { page, limit, total },
   };
 }
 
@@ -99,13 +132,34 @@ async function resumen(usuario) {
   return { contadores, actividad: datos };
 }
 
-/** WHERE y parámetros del tablero. Solo valores por `replacements`, nunca concatenados. */
-function filtrosTablero(usuario, { q, estado, destino, etapa, mios }) {
+/**
+ * Estados que el tablero muestra sin filtro: todos salvo los de `tablero.estados_ocultos`
+ * (decisión de la organización; por defecto, borradores y terminados).
+ */
+async function estadosVisibles() {
+  const { Configuracion } = modelos();
+  const fila = await Configuracion.findByPk('tablero.estados_ocultos');
+  const ocultos = Array.isArray(fila?.valor) ? fila.valor : OCULTOS_POR_DEFECTO;
+  return LISTA_ESTADOS_SOLICITUD.filter((e) => !ocultos.includes(e));
+}
+
+/**
+ * WHERE y parámetros del tablero. Solo valores por `replacements`, nunca concatenados.
+ * @param {{ id: string }} usuario
+ * @param {object} filtros
+ * @param {string[]} [visibles] Estados a mostrar sin filtro de estado.
+ */
+function filtrosTablero(usuario, { q, estado, destino, etapa, mios }, visibles) {
   const condiciones = [];
   const replacements = {};
   // Siempre una lista IN: así el planificador usa el índice (estado, ultimo_cambio_estado).
+  // Si la configuración ocultara todos los estados, el tablero quedaría vacío: se muestran todos.
+  let porDefecto = visibles;
+  if (!porDefecto)
+    porDefecto = LISTA_ESTADOS_SOLICITUD.filter((e) => !OCULTOS_POR_DEFECTO.includes(e));
+  else if (!porDefecto.length) porDefecto = LISTA_ESTADOS_SOLICITUD;
   condiciones.push('s.estado IN (:estados)');
-  replacements.estados = estado?.length ? estado : EN_CURSO;
+  replacements.estados = estado?.length ? estado : porDefecto;
   if (etapa) {
     condiciones.push('s.etapa = :etapa');
     replacements.etapa = etapa;
@@ -137,7 +191,7 @@ function filtrosTablero(usuario, { q, estado, destino, etapa, mios }) {
   return { where: condiciones.join(' AND '), replacements };
 }
 
-/** Consulta del tablero (también la usa la prueba de EXPLAIN). */
+/** Consulta del tablero (también la usa la medición con EXPLAIN). */
 function sqlTablero(where) {
   return `
     SELECT s.id, s.codigo, s.estado, s.etapa, s.ruta_sugerida, s.ruta_decidida,
@@ -162,7 +216,8 @@ function sqlTablero(where) {
 async function tablero(usuario, filtros) {
   const { sequelize, Asignacion, Usuario } = modelos();
   const { page, limit } = filtros;
-  const { where, replacements } = filtrosTablero(usuario, filtros);
+  const visibles = filtros.estado?.length ? undefined : await estadosVisibles();
+  const { where, replacements } = filtrosTablero(usuario, filtros, visibles);
   const tipo = { type: sequelize.QueryTypes.SELECT };
 
   const [filas, [{ total }]] = await Promise.all([
@@ -227,7 +282,7 @@ async function tablero(usuario, filtros) {
 
 module.exports = {
   ESTADOS_RESUMEN,
-  FUERA_DEL_TABLERO,
+  OCULTOS_POR_DEFECTO,
   resumen,
   actividad,
   tablero,

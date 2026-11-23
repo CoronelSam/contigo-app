@@ -33,7 +33,9 @@ registrarRuta({
   ruta: '/actividad',
   etiquetas: ETIQUETA,
   resumen: 'Actividad reciente',
-  descripcion: 'Desde la bitácora de los casos, de la más reciente a la más antigua.',
+  descripcion:
+    'De la más reciente a la más antigua. Los cambios de estado salen del historial de estados, con ' +
+    'el estado anterior, el nuevo y la nota; el resto de las acciones, de la bitácora.',
   query: entrada.actividad,
   respuestas: { 200: { descripcion: 'Actividad', esquema: respuestaPaginadaDe(salida.evento) } },
 });
@@ -46,7 +48,8 @@ registrarRuta({
   resumen: 'Tablero de casos',
   descripcion:
     'Busca por nombre del niño (sin acentos) o código; filtra por estado, destino, etapa y casos ' +
-    'propios. Por defecto, los casos en curso, con más tiempo esperando primero. `diasEnEstado` ' +
+    'propios. Sin filtro de estado, oculta los de `tablero.estados_ocultos` (borradores y terminados). ' +
+    'Por defecto, más tiempo esperando primero. `diasEnEstado` ' +
     'es solo para seguimiento interno: nunca es un plazo.',
   query: entrada.tablero,
   respuestas: { 200: { descripcion: 'Casos', esquema: respuestaPaginadaDe(salida.fila) } },

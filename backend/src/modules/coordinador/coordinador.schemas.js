@@ -37,7 +37,8 @@ const tablero = esquemaPaginacion
       .openapi({
         type: 'string',
         description:
-          'Uno o varios estados separados por coma. Sin él, todos salvo BORRADOR, ACEPTADA y ATENDIDA_HN',
+          'Uno o varios estados separados por coma. Sin él, todos salvo los de la configuración ' +
+          '`tablero.estados_ocultos` (por defecto BORRADOR, ACEPTADA y ATENDIDA_HN)',
       }),
     destino: z.enum(['HONDURAS', 'MEXICO', 'INTERNACIONAL', 'sin_decidir']).optional(),
     etapa: z.enum(['evaluacion', 'paquete']).optional(),
@@ -92,8 +93,14 @@ const evento = z
     codigoCaso: z.string().nullable(),
     autor: z.object({ id: uuid, nombre: z.string(), rol: z.string() }).nullable(),
     fecha: fechaHora,
+    estadoAnterior: estado.nullable().openapi({ description: 'Solo en los cambios de estado' }),
+    estadoNuevo: estado.nullable().openapi({ description: 'Solo en los cambios de estado' }),
+    nota: z.string().nullable().openapi({ description: 'Nota del cambio de estado, si la hay' }),
   })
-  .openapi('Actividad');
+  .openapi('Actividad', {
+    description:
+      'Los cambios de estado salen del historial de estados; el resto de las acciones, de la bitácora',
+  });
 
 const resumen = z
   .object({
