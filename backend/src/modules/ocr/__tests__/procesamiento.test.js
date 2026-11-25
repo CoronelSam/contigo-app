@@ -46,6 +46,20 @@ describe('encolar y procesar', () => {
     expect(cola.pendientes()).toEqual([]);
   });
 
+  test('si la plantilla vinculada quedó inactiva, usa la versión activa del mismo código', async () => {
+    const vieja = await plantillaPara();
+    await vieja.update({ activa: false });
+    const documento = await documentoConPaginas({ solicitud });
+    expect(await encolar(documento)).toBeNull(); // sin versión activa no hay OCR
+
+    // El administrador registra la versión 2 (el tipo de documento sigue apuntando a la 1).
+    const nueva = await f.crearPlantilla({ codigo: vieja.codigo, version: 2, zonasOcr: ZONAS });
+    const extraccion = await encolar(documento);
+    expect(extraccion.plantillaId).toBe(nueva.id);
+    await cola.procesarPendientes();
+    expect((await extraccion.reload()).estado).toBe('por_confirmar');
+  });
+
   test('con plantilla: en cola → procesando → por confirmar, con un campo por zona', async () => {
     await plantillaPara();
     const documento = await documentoConPaginas({ solicitud });

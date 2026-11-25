@@ -30,6 +30,24 @@ const modelos = () => require('../../models');
 // --- Contratos (agente 06)
 
 /**
+ * Plantilla vigente para el OCR: la vinculada al tipo de documento si sigue activa; si no, la
+ * versión activa del mismo código. Registrar una versión nueva desactiva la anterior (agente 11)
+ * y el tipo de documento puede seguir apuntando a ella. Sin versión activa, null.
+ * @param {object | null | undefined} vinculada
+ * @param {import('sequelize').Transaction} [transaction]
+ */
+async function plantillaVigente(vinculada, transaction) {
+  if (!vinculada) return null;
+  if (vinculada.activa) return vinculada;
+  const { PlantillaFormulario } = modelos();
+  return PlantillaFormulario.findOne({
+    where: { codigo: vinculada.codigo, activa: true },
+    order: [['version', 'DESC']],
+    transaction,
+  });
+}
+
+/**
  * Ver contratos.js. Cancela antes cualquier extracción en curso del mismo documento.
  * @param {{ documentoId: string, transaction: import('sequelize').Transaction }} p
  */
@@ -40,8 +58,8 @@ async function encolarExtraccion({ documentoId, transaction }) {
     transaction,
   });
   if (!documento) throw noEncontrado();
-  const plantilla = documento.tipoDocumento?.plantilla;
-  if (!plantilla?.activa || !plantilla.zonasOcr?.length) return null;
+  const plantilla = await plantillaVigente(documento.tipoDocumento?.plantilla, transaction);
+  if (!plantilla?.zonasOcr?.length) return null;
 
   await cancelarExtraccion({ documentoId, transaction });
   const extraccion = await Extraccion.create(
