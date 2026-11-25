@@ -79,6 +79,20 @@
     "descripcion": "Si las firmas pendientes bloquean el paquete final.",
     "valor": true
   },
+  "paquete.consentimiento_secciones": {
+    "descripcion": "Consentimiento que exige cada sección del formulario para entrar al paquete PDF, aunque la plantilla no lo marque. Sin aceptación, esos campos quedan en blanco.",
+    "valor": {
+      "informacion_medica": "divulgacion_informacion_medica",
+      "embarazo_nacimiento": "divulgacion_informacion_medica",
+      "antecedentes_medicos": "divulgacion_informacion_medica",
+      "medicamentos_alergias": "divulgacion_informacion_medica",
+      "crecimiento_movilidad": "divulgacion_informacion_medica"
+    }
+  },
+  "paquete.consentimiento_anexos": {
+    "descripcion": "Consentimiento que exige cada categoría de documento para anexarse al paquete PDF. Sin aceptación, el documento no se anexa.",
+    "valor": { "medico": "divulgacion_informacion_medica" }
+  },
   "auth.exigir_correo_verificado": {
     "descripcion": "Si el inicio de sesión exige el correo verificado (decisión pendiente).",
     "valor": false

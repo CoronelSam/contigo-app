@@ -56,7 +56,7 @@ describe('cola en memoria (pruebas)', () => {
   });
 
   test('sin handler registrado usa el del módulo dueño (hoy, stubs NoImplementado)', async () => {
-    await cola.enviar(T.PAQUETE_GENERAR, { paqueteId: 'p1' });
+    await cola.enviar(T.NOTIFICACION_PUSH, { notificacionId: 'n1' });
     await expect(cola.procesarPendientes()).rejects.toBeInstanceOf(NoImplementado);
   });
 });
@@ -66,14 +66,13 @@ describe('src/jobs.js', () => {
     expect(Object.keys(trabajos).sort()).toEqual([...T.NOMBRES].sort());
   });
 
-  // correo.enviar (02) y ocr.procesar (07) ya están implementados.
-  test.each(T.NOMBRES.filter((n) => ![T.CORREO_ENVIAR, T.OCR_PROCESAR].includes(n)))(
-    'el stub de %s lanza NoImplementado',
-    async (nombre) => {
-      const handler = trabajos[nombre]();
-      await expect(handler({}, { trabajo: {}, logger: console })).rejects.toBeInstanceOf(
-        NoImplementado,
-      );
-    },
-  );
+  // correo.enviar (02), ocr.procesar (07) y paquete.generar (11) ya están implementados.
+  test.each(
+    T.NOMBRES.filter((n) => ![T.CORREO_ENVIAR, T.OCR_PROCESAR, T.PAQUETE_GENERAR].includes(n)),
+  )('el stub de %s lanza NoImplementado', async (nombre) => {
+    const handler = trabajos[nombre]();
+    await expect(handler({}, { trabajo: {}, logger: console })).rejects.toBeInstanceOf(
+      NoImplementado,
+    );
+  });
 });
