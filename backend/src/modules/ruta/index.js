@@ -6,5 +6,7 @@
 const { Router } = require('express');
 
 const router = Router();
+router.use(require('./ruta.routes'));
+router.use(require('./admin.routes'));
 
 module.exports = router;
