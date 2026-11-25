@@ -169,8 +169,35 @@ const imagen = (n = 1) =>
     .jpeg()
     .toBuffer();
 
-/** Documento con páginas guardadas de verdad en el almacenamiento. */
-async function documentoConPaginas({ solicitud, tipo, estado = 'VALIDADO', paginas = 1 }) {
+/** PDF de una página con una imagen de ruido que no se comprime (~5 MB): un escaneo pesado. */
+async function pdfPesado() {
+  const jpeg = await sharp({
+    create: {
+      width: 2000,
+      height: 2000,
+      channels: 3,
+      noise: { type: 'gaussian', mean: 128, sigma: 60 },
+    },
+  })
+    .jpeg({ quality: 100 })
+    .toBuffer();
+  const doc = await PDFDocument.create();
+  const imagenPesada = await doc.embedJpg(jpeg);
+  doc.addPage([600, 600]).drawImage(imagenPesada, { x: 0, y: 0, width: 600, height: 600 });
+  return Buffer.from(await doc.save());
+}
+
+/**
+ * Documento con páginas guardadas de verdad en el almacenamiento. Con `contenido`, todas las
+ * páginas son ese archivo; si no, una imagen distinta por página.
+ */
+async function documentoConPaginas({
+  solicitud,
+  tipo,
+  estado = 'VALIDADO',
+  paginas = 1,
+  contenido,
+}) {
   const documento = await f.crearDocumento({
     solicitud,
     tipo,
@@ -179,7 +206,8 @@ async function documentoConPaginas({ solicitud, tipo, estado = 'VALIDADO', pagin
     paginasDeclaradas: paginas,
   });
   for (let orden = 1; orden <= paginas; orden += 1) {
-    const archivo = await guardarArchivo({ buffer: await imagen(orden), prefijo: 'documentos' });
+    const buffer = contenido ?? (await imagen(orden));
+    const archivo = await guardarArchivo({ buffer, prefijo: 'documentos' });
     await db.DocumentoPagina.create({ documentoId: documento.id, orden, archivoId: archivo.id });
   }
   return documento;
@@ -293,6 +321,7 @@ module.exports = {
   plantillaReal,
   plantillasDePrueba,
   documentoConPaginas,
+  pdfPesado,
   completarExpediente,
   leerArchivo,
   textoDelPdf,

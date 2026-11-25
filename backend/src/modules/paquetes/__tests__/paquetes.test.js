@@ -19,6 +19,8 @@ const {
   leerArchivo,
   textoDelPdf,
   solicitar,
+  documentoConPaginas,
+  pdfPesado,
 } = require('./ayudantes');
 
 let coord;
@@ -331,6 +333,31 @@ describe('POST /solicitudes/:id/paquetes y el trabajo paquete.generar', () => {
     expect(nuevo.plantillas).toEqual([
       expect.objectContaining({ codigo: 'solicitud_internacional_prueba', version: 2 }),
     ]);
+  });
+
+  test('un paquete más grande que ARCHIVOS_MAX_MB se guarda con su propio límite (PAQUETE_MAX_MB)', async () => {
+    const solicitud = await f.crearSolicitud({
+      estado: 'PAQUETE_EXTERIOR',
+      rutaDecidida: 'INTERNACIONAL',
+    });
+    await db.Consentimiento.create({
+      solicitudId: solicitud.id,
+      tipo: 'divulgacion_informacion_medica',
+      decision: 'acepta',
+      decididoEn: new Date(),
+      estadoFirma: 'firmado',
+    });
+    // Tres páginas escaneadas en PDF de ~5 MB: cada una cabe en el límite de subida, juntas no.
+    await documentoConPaginas({
+      solicitud,
+      tipo: 'radiografias_informes',
+      paginas: 3,
+      contenido: await pdfPesado(),
+    });
+    const paquete = await generar(solicitud, 'borrador');
+    expect(paquete).toMatchObject({ estado: 'listo', error: null, numeroPaginas: 5 });
+    const archivo = await db.Archivo.findByPk((await db.PaquetePdf.findByPk(paquete.id)).archivoId);
+    expect(archivo.bytes).toBeGreaterThan(10 * 1024 * 1024);
   });
 
   test('si el PDF de la plantilla no está disponible, el paquete queda fallido con un código', async () => {

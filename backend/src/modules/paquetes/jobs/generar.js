@@ -7,6 +7,7 @@
 // el log datos del caso ni mensajes de error que puedan contenerlos.
 
 const { guardarArchivo } = require('../../../core/archivos');
+const { config } = require('../../../config/env');
 const { generar } = require('../generador');
 
 const modelos = () => require('../../../models');
@@ -36,6 +37,7 @@ module.exports = async function generarPaquete({ paqueteId }, { logger }) {
         buffer: Buffer.from(resultado.bytes),
         prefijo: 'paquetes',
         tipos: ['application/pdf'],
+        maxBytes: config().paquetes.maxBytes,
         transaction,
       });
       await PaquetePdf.update(

@@ -45,6 +45,7 @@ const esquema = z
     URL_FIRMADA_SEGUNDOS: z.coerce.number().int().min(30).max(3600).default(300),
     ARCHIVOS_MAX_MB: z.coerce.number().int().min(1).max(50).default(10),
     PAQUETE_ENLACE_MINUTOS: z.coerce.number().int().min(5).max(1440).default(60),
+    PAQUETE_MAX_MB: z.coerce.number().int().min(1).max(500).default(50),
 
     COLA_PROVEEDOR: z.enum(['pgboss', 'memoria']).optional(),
 
@@ -158,7 +159,10 @@ function cargarConfig(env = process.env) {
       urlFirmadaSegundos: e.URL_FIRMADA_SEGUNDOS,
     }),
     archivos: Object.freeze({ maxBytes: e.ARCHIVOS_MAX_MB * 1024 * 1024 }),
-    paquetes: Object.freeze({ enlaceMinutos: e.PAQUETE_ENLACE_MINUTOS }),
+    paquetes: Object.freeze({
+      enlaceMinutos: e.PAQUETE_ENLACE_MINUTOS,
+      maxBytes: e.PAQUETE_MAX_MB * 1024 * 1024,
+    }),
     cola: Object.freeze({
       proveedor: e.COLA_PROVEEDOR ?? (entorno === 'test' ? 'memoria' : 'pgboss'),
     }),
