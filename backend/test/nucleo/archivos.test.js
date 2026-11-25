@@ -87,6 +87,19 @@ describe('core/archivos', () => {
     });
   });
 
+  test('maxBytes: límite propio para los archivos que genera el sistema', async () => {
+    const grande = Buffer.concat([PDF, Buffer.alloc(10 * 1024 * 1024)]);
+    const archivo = await archivos.guardarArchivo({
+      buffer: grande,
+      prefijo: 'pruebas',
+      maxBytes: 20 * 1024 * 1024,
+    });
+    expect(archivo.bytes).toBe(grande.length);
+    await expect(
+      archivos.guardarArchivo({ buffer: PDF, prefijo: 'pruebas', maxBytes: 10 }),
+    ).rejects.toMatchObject({ status: 413, codigo: 'ARCHIVO_DEMASIADO_GRANDE' });
+  });
+
   test('urlFirmada registra el acceso y exige un usuario en el contexto', async () => {
     const usuario = await f.crearUsuario({ rol: 'coordinador' });
     const solicitud = await f.crearSolicitud();

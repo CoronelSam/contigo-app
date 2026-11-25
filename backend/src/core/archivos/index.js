@@ -59,17 +59,20 @@ const calcularSha256 = (buffer) => crypto.createHash('sha256').update(buffer).di
  * Nota: el objeto se sube antes del commit; si la transacción se revierte queda un objeto
  * huérfano en el almacenamiento (no visible sin su fila).
  *
- * @param {{ buffer: Buffer, prefijo: string, tipos?: readonly string[],
+ * `maxBytes` es un límite propio para los archivos que genera el sistema (por ejemplo, el paquete
+ * PDF). Nunca se usa para lo que sube un usuario, que siempre tiene ARCHIVOS_MAX_MB.
+ *
+ * @param {{ buffer: Buffer, prefijo: string, tipos?: readonly string[], maxBytes?: number,
  *   transaction?: import('sequelize').Transaction }} p
  * @returns {Promise<object>} Fila de `archivos`.
  */
-async function guardarArchivo({ buffer, prefijo, tipos = MIMES, transaction }) {
+async function guardarArchivo({ buffer, prefijo, tipos = MIMES, maxBytes: limite, transaction }) {
   if (!PREFIJO_VALIDO.test(prefijo ?? ''))
     throw new Error(`Prefijo de archivo inválido: ${prefijo}`);
   if (!Buffer.isBuffer(buffer) || buffer.length === 0) {
     throw validacion({ archivo: 'REQUERIDO' }, 'El archivo está vacío');
   }
-  if (buffer.length > maxBytes()) {
+  if (buffer.length > (limite ?? maxBytes())) {
     throw new AppError(413, 'ARCHIVO_DEMASIADO_GRANDE', 'El archivo supera el tamaño máximo', {
       archivo: 'MUY_GRANDE',
     });
