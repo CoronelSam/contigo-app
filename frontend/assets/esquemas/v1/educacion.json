@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vanguardia:secciones:v1:educacion",
+  "title": "Educación (18)",
+  "description": "Con el grado escolar \"no_aplica\" (aún no tiene edad escolar) no se pregunta asistencia ni educación especial.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "gradoEscolar": {
+      "type": "string",
+      "catalogo": "grado_escolar"
+    },
+    "asisteEscuela": {
+      "type": "string",
+      "enum": ["si", "no"]
+    },
+    "educacionEspecial": {
+      "type": "string",
+      "enum": ["si", "no"]
+    },
+    "preocupaciones": {
+      "type": "string",
+      "maxLength": 1000
+    }
+  },
+  "obligatorios": ["gradoEscolar"],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "gradoEscolar": {
+            "const": "no_aplica"
+          }
+        },
+        "required": ["gradoEscolar"]
+      },
+      "then": {
+        "properties": {
+          "asisteEscuela": false,
+          "educacionEspecial": false
+        }
+      },
+      "else": {
+        "obligatorios": ["asisteEscuela", "educacionEspecial"]
+      }
+    }
+  ]
+}

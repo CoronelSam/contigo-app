@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vanguardia:secciones:v1:medicamentos_alergias",
+  "title": "Medicamentos y alergias (16)",
+  "description": "Medicamentos, suplementos y remedios de uso regular. Alergias \"no\" (o \"no sé\") no lleva tipo ni reacción.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "usaMedicamentos": {
+      "type": "string",
+      "enum": ["si", "no"]
+    },
+    "medicamentos": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "enum": ["medicamento", "suplemento", "remedio"]
+          },
+          "nombre": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "dosis": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "motivo": {
+            "type": "string",
+            "maxLength": 300
+          }
+        },
+        "obligatorios": ["nombre"]
+      }
+    },
+    "alergias": {
+      "type": "string",
+      "enum": ["si", "no", "no_se"]
+    },
+    "alergiasTipo": {
+      "type": "string",
+      "maxLength": 300
+    },
+    "alergiasReaccion": {
+      "type": "string",
+      "maxLength": 500
+    }
+  },
+  "obligatorios": ["usaMedicamentos", "alergias"],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "usaMedicamentos": {
+            "const": "si"
+          }
+        },
+        "required": ["usaMedicamentos"]
+      },
+      "then": {
+        "obligatorios": ["medicamentos"]
+      },
+      "else": {
+        "properties": {
+          "medicamentos": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "alergias": {
+            "const": "si"
+          }
+        },
+        "required": ["alergias"]
+      },
+      "then": {
+        "obligatorios": ["alergiasTipo", "alergiasReaccion"]
+      },
+      "else": {
+        "properties": {
+          "alergiasTipo": false,
+          "alergiasReaccion": false
+        }
+      }
+    }
+  ]
+}

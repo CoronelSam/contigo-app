@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:vanguardia:secciones:v1:crecimiento_movilidad",
+  "title": "Crecimiento y movilidad (17)",
+  "description": "La edad (en meses) de cada logro solo se pide si el niño ya lo logró.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "sentarse": {
+      "type": "string",
+      "enum": ["logrado", "aun_no", "no_se"]
+    },
+    "sentarseEdadMeses": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 240
+    },
+    "caminarConAyuda": {
+      "type": "string",
+      "enum": ["logrado", "aun_no", "no_se"]
+    },
+    "caminarConAyudaEdadMeses": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 240
+    },
+    "caminarSolo": {
+      "type": "string",
+      "enum": ["logrado", "aun_no", "no_se"]
+    },
+    "caminarSoloEdadMeses": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 240
+    },
+    "ayudasTecnicas": {
+      "type": "array",
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "catalogo": "ayuda_tecnica"
+      }
+    },
+    "ayudasTecnicasOtra": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "terapias": {
+      "type": "array",
+      "maxItems": 30,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "catalogo": "terapia"
+      }
+    },
+    "terapiasOtra": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "actividadesIndependientes": {
+      "type": "string",
+      "maxLength": 1000
+    }
+  },
+  "obligatorios": ["sentarse", "caminarConAyuda", "caminarSolo"],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "sentarse": {
+            "const": "logrado"
+          }
+        },
+        "required": ["sentarse"]
+      },
+      "then": {
+        "obligatorios": ["sentarseEdadMeses"]
+      },
+      "else": {
+        "properties": {
+          "sentarseEdadMeses": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "caminarConAyuda": {
+            "const": "logrado"
+          }
+        },
+        "required": ["caminarConAyuda"]
+      },
+      "then": {
+        "obligatorios": ["caminarConAyudaEdadMeses"]
+      },
+      "else": {
+        "properties": {
+          "caminarConAyudaEdadMeses": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "caminarSolo": {
+            "const": "logrado"
+          }
+        },
+        "required": ["caminarSolo"]
+      },
+      "then": {
+        "obligatorios": ["caminarSoloEdadMeses"]
+      },
+      "else": {
+        "properties": {
+          "caminarSoloEdadMeses": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "ayudasTecnicas": {
+            "type": "array",
+            "contains": {
+              "const": "otra"
+            }
+          }
+        },
+        "required": ["ayudasTecnicas"]
+      },
+      "then": {
+        "obligatorios": ["ayudasTecnicasOtra"]
+      },
+      "else": {
+        "properties": {
+          "ayudasTecnicasOtra": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "terapias": {
+            "type": "array",
+            "contains": {
+              "const": "otra"
+            }
+          }
+        },
+        "required": ["terapias"]
+      },
+      "then": {
+        "obligatorios": ["terapiasOtra"]
+      },
+      "else": {
+        "properties": {
+          "terapiasOtra": false
+        }
+      }
+    }
+  ]
+}

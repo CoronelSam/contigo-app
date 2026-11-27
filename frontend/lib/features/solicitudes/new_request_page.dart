@@ -3,6 +3,8 @@ import '../../core/auth/session.dart';
 import '../../core/theme/contigo_theme.dart';
 import '../../core/widgets/ui.dart';
 import '../familia/widgets/step_header.dart';
+import '../medico/medical_flow.dart';
+import '../documentos/documents_flow.dart';
 
 class NewRequestPage extends StatefulWidget {
   final Session session;
@@ -78,10 +80,23 @@ class _NewRequestPageState extends State<NewRequestPage> {
       if (result is Map) {
         setState(() => status = result['estado']?.toString() ?? 'CAPTURA');
       }
-      showMessage(context,
-          'Modalidad guardada. Puedes retomar tu solicitud cuando quieras.');
+      await _continueFlow();
     } catch (e) { if (mounted) setState(() => error = e.toString()); }
     finally { if (mounted) setState(() => saving = false); }
+  }
+
+  Future<void> _continueFlow() async {
+    if (id == null || selected == null) return;
+    if (selected == 'app') {
+      await Navigator.push(context, MaterialPageRoute(builder: (_) =>
+        MedicalFlowPage(session: widget.session, requestId: id!,
+          caseCode: code ?? '')));
+    } else {
+      await Navigator.push(context, MaterialPageRoute(builder: (_) =>
+        DocumentsFlowPage(session: widget.session, requestId: id!,
+          caseCode: code ?? '')));
+    }
+    if (mounted) _loadExisting();
   }
 
   @override
@@ -135,12 +150,11 @@ class _NewRequestPageState extends State<NewRequestPage> {
               'No tendrás que registrar al niño nuevamente.')),
         const SizedBox(height: 16),
         ElevatedButton(onPressed: saving || selected == null ? null : _choose,
-          child: const Text('Guardar modalidad')),
+          child: const Text('Guardar y continuar')),
         const SizedBox(height: 10),
-        const Text('El formulario médico se habilitará en la etapa 3 '
-            'y la captura de documentos en la etapa 4.',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12, color: Color(0xFF66616A))),
+        if (status == 'CAPTURA' && selected != null)
+          TextButton(onPressed: saving ? null : _continueFlow,
+            child: const Text('Continuar solicitud existente')),
       ],
       if (saving) const LinearProgressIndicator(),
       if (error != null) ErrorNotice(error!),
