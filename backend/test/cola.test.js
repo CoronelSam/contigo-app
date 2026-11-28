@@ -3,7 +3,7 @@
 const cola = require('../src/core/cola');
 const T = require('../src/core/cola/trabajos');
 const trabajos = require('../src/jobs');
-const { NoImplementado } = require('../src/core/errores');
+const crypto = require('node:crypto');
 const { sequelize } = require('../src/models');
 
 describe('cola en memoria (pruebas)', () => {
@@ -55,9 +55,11 @@ describe('cola en memoria (pruebas)', () => {
     expect(cola.pendientes().map((t) => t.datos)).toEqual([{ caso: 'commit' }]);
   });
 
-  test('sin handler registrado usa el del módulo dueño (hoy, stubs NoImplementado)', async () => {
-    await cola.enviar(T.NOTIFICACION_PUSH, { notificacionId: 'n1' });
-    await expect(cola.procesarPendientes()).rejects.toBeInstanceOf(NoImplementado);
+  test('sin handler registrado usa el del módulo dueño', async () => {
+    // notificacion.push (agente 12) con una notificación que no existe: termina sin hacer nada.
+    await cola.enviar(T.NOTIFICACION_PUSH, { notificacionId: crypto.randomUUID() });
+    const { procesados } = await cola.procesarPendientes();
+    expect(procesados).toHaveLength(1);
   });
 });
 
@@ -66,13 +68,8 @@ describe('src/jobs.js', () => {
     expect(Object.keys(trabajos).sort()).toEqual([...T.NOMBRES].sort());
   });
 
-  // correo.enviar (02), ocr.procesar (07) y paquete.generar (11) ya están implementados.
-  test.each(
-    T.NOMBRES.filter((n) => ![T.CORREO_ENVIAR, T.OCR_PROCESAR, T.PAQUETE_GENERAR].includes(n)),
-  )('el stub de %s lanza NoImplementado', async (nombre) => {
-    const handler = trabajos[nombre]();
-    await expect(handler({}, { trabajo: {}, logger: console })).rejects.toBeInstanceOf(
-      NoImplementado,
-    );
+  // Todos los trabajos ya están implementados (02, 07, 11 y 12): cada uno carga su handler.
+  test.each(T.NOMBRES)('%s carga el handler de su módulo', (nombre) => {
+    expect(typeof trabajos[nombre]()).toBe('function');
   });
 });
