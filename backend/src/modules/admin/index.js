@@ -6,5 +6,9 @@
 const { Router } = require('express');
 
 const router = Router();
+router.use(require('./panel.routes'));
+router.use(require('./usuarios.routes'));
+router.use(require('./catalogos.routes'));
+router.use(require('./configuracion.routes'));
 
 module.exports = router;
