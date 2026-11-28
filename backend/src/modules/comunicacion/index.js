@@ -6,5 +6,7 @@
 const { Router } = require('express');
 
 const router = Router();
+router.use(require('./mensajes.routes'));
+router.use(require('./notificaciones.routes'));
 
 module.exports = router;
