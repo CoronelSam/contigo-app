@@ -8,8 +8,10 @@
 // - Solo se guardan respuestas 2xx: si la primera falla, un reintento con la misma clave se
 //   vuelve a ejecutar.
 //
-// Va después de requiereAuth. En subidas multipart, ponlo ANTES de multer: así un reintento no
-// vuelve a subir el archivo (el hash cubre solo los campos JSON ya leídos).
+// Va después de requiereAuth. En subidas multipart, ponlo DESPUÉS de subidaEnMemoria: la huella
+// incluye los campos del formulario y el sha256 de cada archivo, así que la misma clave con otro
+// archivo responde 422. Un multipart que todavía no se leyó responde 400 en vez de compararse
+// como un cuerpo vacío.
 
 const crypto = require('node:crypto');
 const { AppError, precondicionRequerida, validacion, conflicto } = require('../errores');
@@ -36,6 +38,29 @@ const hashCuerpo = (cuerpo) =>
     .update(serializarEstable(cuerpo ?? {}))
     .digest('hex');
 
+/** Archivos que dejó multer: `req.file`, `req.files` como lista o como objeto por campo. */
+function archivosDe(req) {
+  if (req.file) return [req.file];
+  if (Array.isArray(req.files)) return req.files;
+  if (req.files && typeof req.files === 'object') return Object.values(req.files).flat();
+  return [];
+}
+
+/**
+ * Hash de lo que identifica la petición: el cuerpo y, si hay adjuntos, el campo y el sha256 de
+ * cada uno. Sin adjuntos es igual a `hashCuerpo(req.body)`.
+ */
+function hashPeticion(req) {
+  if (req.body === undefined && req.is('multipart/form-data')) {
+    throw validacion({ 'Content-Type': 'NO_SOPORTADO' });
+  }
+  const archivos = archivosDe(req).map((a) => ({
+    campo: a.fieldname,
+    sha256: crypto.createHash('sha256').update(a.buffer).digest('hex'),
+  }));
+  return hashCuerpo(archivos.length ? { cuerpo: req.body ?? {}, archivos } : req.body);
+}
+
 /**
  * @param {{ obligatorio?: boolean }} [opciones]
  * @returns {import('express').RequestHandler}
@@ -53,7 +78,7 @@ function idempotente({ obligatorio = true } = {}) {
     const { ClaveIdempotencia } = require('../../models');
     const llave = { usuarioId: req.usuario.id, clave };
     const ruta = req.originalUrl.split('?')[0];
-    const huella = { metodo: req.method, ruta, hashCuerpo: hashCuerpo(req.body) };
+    const huella = { metodo: req.method, ruta, hashCuerpo: hashPeticion(req) };
 
     const [registro, creado] = await ClaveIdempotencia.findOrCreate({
       where: llave,
@@ -118,4 +143,4 @@ function idempotente({ obligatorio = true } = {}) {
   };
 }
 
-module.exports = { idempotente, hashCuerpo, serializarEstable };
+module.exports = { idempotente, hashCuerpo, hashPeticion, serializarEstable };

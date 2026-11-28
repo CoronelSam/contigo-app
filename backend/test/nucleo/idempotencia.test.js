@@ -8,6 +8,7 @@ const { tokenPara } = require('../helpers/auth');
 const { appDePrueba } = require('../helpers/app');
 const { requiereAuth } = require('../../src/core/auth');
 const { idempotente } = require('../../src/core/http/idempotencia');
+const { subidaEnMemoria } = require('../../src/core/archivos');
 const { conflicto } = require('../../src/core/errores');
 
 let ejecuciones = 0;
@@ -29,6 +30,21 @@ const manejador = async (req, res) => {
 router.post('/idem', requiereAuth, idempotente(), manejador);
 router.post('/idem-opcional', requiereAuth, idempotente({ obligatorio: false }), manejador);
 router.post('/idem-otra', requiereAuth, idempotente(), manejador);
+router.post(
+  '/idem-archivo',
+  requiereAuth,
+  ...subidaEnMemoria({ campo: 'archivo' }),
+  idempotente(),
+  manejador,
+);
+// Mal ordenado a propósito: el multipart todavía no se leyó cuando llega a idempotente().
+router.post(
+  '/idem-antes-de-multer',
+  requiereAuth,
+  idempotente(),
+  ...subidaEnMemoria({ campo: 'archivo' }),
+  manejador,
+);
 const cliente = appDePrueba(router);
 
 const CLAVE = '2f1d8c6e-4a7b-4c5d-9e8f-0a1b2c3d4e5f';
@@ -100,6 +116,46 @@ describe('Idempotency-Key', () => {
     liberar();
     expect((await respuestaPrimera).status).toBe(201);
     expect(ejecuciones).toBe(1);
+  });
+
+  describe('con adjuntos (multipart)', () => {
+    const subir = (archivo, { ruta = '/idem-archivo', nota = 'ficticia' } = {}) => {
+      const r = cliente
+        .post(ruta)
+        .set('Authorization', `Bearer ${token}`)
+        .set('Idempotency-Key', CLAVE)
+        .field('nota', nota);
+      return archivo ? r.attach('archivo', Buffer.from(archivo), 'adjunto.bin') : r;
+    };
+
+    test('mismo formulario y mismo archivo: devuelve la respuesta guardada', async () => {
+      const primera = await subir('contenido ficticio A').expect(201);
+      const segunda = await subir('contenido ficticio A').expect(201);
+      expect(segunda.headers['idempotency-replayed']).toBe('true');
+      expect(segunda.body).toEqual(primera.body);
+      expect(ejecuciones).toBe(1);
+    });
+
+    test('otro archivo, sin archivo u otro campo con la misma clave → 422', async () => {
+      await subir('contenido ficticio A').expect(201);
+      for (const intento of [
+        subir('contenido ficticio B'),
+        subir(null),
+        subir('contenido ficticio A', { nota: 'otra' }),
+      ]) {
+        expect((await intento.expect(422)).body.codigo).toBe('IDEMPOTENCIA_CUERPO_DISTINTO');
+      }
+      expect(ejecuciones).toBe(1);
+    });
+
+    test('antes de leer el multipart no compara un cuerpo vacío: responde 400', async () => {
+      const res = await subir('contenido ficticio A', { ruta: '/idem-antes-de-multer' }).expect(
+        400,
+      );
+      expect(res.body.campos).toEqual({ 'Content-Type': 'NO_SOPORTADO' });
+      expect(ejecuciones).toBe(0);
+      expect(await db.ClaveIdempotencia.count()).toBe(0);
+    });
   });
 
   test('una clave vencida se puede reutilizar', async () => {

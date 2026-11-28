@@ -180,6 +180,24 @@ describe('POST y GET /solicitudes/:id/mensajes', () => {
     await enviar('Otro texto ficticio').expect(422);
   });
 
+  test('Idempotency-Key con adjunto: el mismo archivo se repite; otro archivo con la misma clave → 422', async () => {
+    const clave = crypto.randomUUID();
+    const pdf = Buffer.from('%PDF-1.4\n% ficticio\n');
+    const enviar = (archivo, nombre) =>
+      con(api().post(ruta()), tf)
+        .set('Idempotency-Key', clave)
+        .field('cuerpo', 'Adjunto ficticio')
+        .attach('archivo', archivo, nombre);
+    const primero = await enviar(await png(), 'foto.png').expect(201);
+    const repetido = await enviar(await png(), 'foto.png').expect(201);
+    expect(repetido.headers['idempotency-replayed']).toBe('true');
+    expect(repetido.body.id).toBe(primero.body.id);
+    const otro = await enviar(pdf, 'informe.pdf').expect(422);
+    expect(otro.body.codigo).toBe('IDEMPOTENCIA_CUERPO_DISTINTO');
+    expect(await db.Mensaje.count()).toBe(1);
+    expect(await db.Archivo.count()).toBe(1);
+  });
+
   test('paginación con el cursor antesDe, sin repetir ni saltar mensajes', async () => {
     const base = Date.now() - 60_000;
     const creados = [];

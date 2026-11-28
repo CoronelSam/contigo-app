@@ -83,8 +83,8 @@ router.post(
   '/documentos/:id/paginas',
   ...con('documento.capturar'),
   params,
-  idempotente({ obligatorio: true }),
   ...subidaEnMemoria({ campo: 'archivo' }),
+  idempotente({ obligatorio: true }),
   validar({ body: entrada.pagina }),
   c.agregarPagina,
 );

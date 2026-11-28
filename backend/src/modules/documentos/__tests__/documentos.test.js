@@ -164,6 +164,9 @@ describe('POST /solicitudes/:id/documentos', () => {
     const repetida = await subirPagina(id, ctx.token, await imagen(5), { clave }).expect(201);
     expect(repetida.headers['idempotency-replayed']).toBe('true');
     expect(repetida.body).toEqual(pagina.body);
+    // La misma clave con otra imagen no devuelve la página anterior.
+    const otraImagen = await subirPagina(id, ctx.token, await imagen(6), { clave }).expect(422);
+    expect(otraImagen.body.codigo).toBe('IDEMPOTENCIA_CUERPO_DISTINTO');
     const mismaImagen = await subirPagina(id, ctx.token, await imagen(5)).expect(200);
     expect(mismaImagen.body.id).toBe(pagina.body.id);
 
